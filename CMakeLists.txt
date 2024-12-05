@@ -9,6 +9,7 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -std=c++11 -Wall -O3 -Werror -Wno-unused-fun
 set(LIB_SRC
         sylar/log.cpp
         sylar/util.cpp
+        sylar/config.cpp
     )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
@@ -18,6 +19,11 @@ add_library(sylar SHARED ${LIB_SRC})
 add_executable(test tests/test.cpp)
 add_dependencies(test sylar)
 target_link_libraries(test sylar)
+
+
+add_executable(test_config tests/test_config.cpp)
+add_dependencies(test_config sylar)
+target_link_libraries(test_config sylar)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
