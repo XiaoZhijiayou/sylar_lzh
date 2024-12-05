@@ -151,7 +151,7 @@ Logger::Logger(const std::string& name)
 };
 
 void Logger::addAppender(LogAppender::ptr appender){
-  if(appender->getFormatter()){
+  if(!appender->getFormatter()){
     appender->setFormatter(m_formatter);
   }
     m_appenders.push_back(appender);
