@@ -8,6 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -std=c++11 -Wall -O3 -Werror -Wno-unused-function -Wno-deprecated -g -rdynamic")
 set(LIB_SRC
         sylar/log.cpp
+        sylar/util.cpp
     )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
