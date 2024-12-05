@@ -5,7 +5,7 @@ set(CMAKE_CXX_COMPILER /usr/bin/g++)  # 替换为实际的 g++ 路径
 cmake_minimum_required(VERSION 2.8)
 project(sylar)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Werror -Wno-unused-function -Wno-deprecated -g -fPIC -fdiagnostics-color=always")
+set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -std=c++11 -Wall -O3 -Werror -Wno-unused-function -Wno-deprecated -g -rdynamic")
 set(LIB_SRC
         sylar/log.cpp
     )
