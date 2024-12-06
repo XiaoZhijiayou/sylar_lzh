@@ -6,13 +6,16 @@
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 #include "log.h"
+#include <yaml-cpp/yaml.h>
 
 namespace sylar {
 class ConfigVarBase {
 public:
   typedef std::shared_ptr<ConfigVarBase> ptr;
   ConfigVarBase(const std::string &name, const std::string &description = "")
-      : m_name_(name), m_description(description) {}
+      : m_name_(name), m_description(description) {
+      std::transform(m_name_.begin(), m_name_.end(), m_name_.begin(), ::tolower);
+  }
   virtual ~ConfigVarBase() {}
   const std::string &getName() const { return m_name_; }
   const std::string &getDescription() const { return m_description; }
@@ -71,7 +74,7 @@ public:
           SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
           return tmp;
         }
-        if(name.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._012345678")
+        if(name.find_first_not_of("abcdefghijklmnopqrstuvwxyz._012345678")
             != std::string::npos){
             SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name invalid" << name;
             throw std::invalid_argument(name);
@@ -90,8 +93,13 @@ public:
         }
         return std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
     }
+
+    static void LoadFromYaml(const YAML::Node& root);
+
+    static  ConfigVarBase::ptr LookupBase(const std::string &name);
 private:
     static ConfigVarMap m_datas;
+
 };
 
 }

@@ -1,15 +1,16 @@
 set(CMAKE_C_COMPILER /usr/bin/gcc)  # 替换为实际的 gcc 路径
 set(CMAKE_CXX_COMPILER /usr/bin/g++)  # 替换为实际的 g++ 路径
-
-cmake_policy(SET CMP0167 NEW)  # 启用新版 CMake 语法
-
-include_directories(.)
-include_directories(/usr/include)
-link_directories(/usr/lib)
 cmake_minimum_required(VERSION 3.10)
 project(sylar)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -std=c++11 -Wall -O3 -Werror -Wno-unused-function -Wno-deprecated -g -rdynamic")
+
+include_directories(.)
+include_directories(/usr/include)
+link_directories(/usr/lib)
+
+
+
 set(LIB_SRC
         sylar/log.cpp
         sylar/util.cpp
