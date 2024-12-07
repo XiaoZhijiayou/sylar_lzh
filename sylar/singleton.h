@@ -11,26 +11,24 @@
 
 namespace sylar {
 
-template<typename T,class X = void,int N = 0>
+template <typename T, class X = void, int N = 0>
 class Singleton {
-public:
-    static T* GetInstance() {
-        static T v;
-        return &v;
-    }
+ public:
+  static T* GetInstance() {
+    static T v;
+    return &v;
+  }
 };
 
-template<typename T,class X = void,int N = 0>
+template <typename T, class X = void, int N = 0>
 class SingletonPtr {
-public:
-    static std::shared_ptr<T> GetInstance() {
-        static std::shared_ptr<T> v(new T);
-        return v;
-    }
+ public:
+  static std::shared_ptr<T> GetInstance() {
+    static std::shared_ptr<T> v(new T);
+    return v;
+  }
 };
 
-}
+}  // namespace sylar
 
-
-
-#endif // __SYLAR_SINGLETON_H__
+#endif  // __SYLAR_SINGLETON_H__

@@ -3,21 +3,36 @@ logs:
     level: info
     formatter: '%d%T%m%n'
     appender:
-      -  type: FileLogAppender
-         file: log.txt
-      -  type: StdoutLogAppender
+      - type: FileLogAppender
+        file: log.txt
+      - type: StdoutLogAppender
   - name: system
     level: debug
     formatter: '%d%T%m%n'
     appender:
-      -  type: FileLogAppender
-         path: log.txt
-      -  type: StdoutLogAppender
+      - type: FileLogAppender
+        path: log.txt
+      - type: StdoutLogAppender
 
 system:
-    port: 9900
-    value: 15
-    int_vec:
-      - 10
-      - 20
-      - 30
+  port: 9900
+  value: 15
+  int_vec:
+    - 10
+    - 20
+    - 30
+  int_list: [ 20,40,50,20 ]
+  int_set: [ 30,20,60,20 ]
+  int_uset: [ 30,20,60,20 ]
+  str_int_map:
+    key1: 10
+    key2: 20
+    key3: 30
+  str_int_umap:
+    key1: 110
+    key2: 120
+    key3: 130
+    key4: 110
+
+
+

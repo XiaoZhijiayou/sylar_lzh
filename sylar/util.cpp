@@ -1,14 +1,14 @@
 #include "util.h"
-namespace sylar{
+namespace sylar {
 #include <pthread.h>
-#include <sys/types.h>
-#include <sys/syscall.h>
 #include <stdio.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
 
-pid_t GetThreadId(){
+pid_t GetThreadId() {
   return syscall(SYS_gettid);
 }
-uint32_t GetFiberId(){
-    return 0;
+uint32_t GetFiberId() {
+  return 0;
 }
-}
+}  // namespace sylar

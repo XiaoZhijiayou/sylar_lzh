@@ -10,17 +10,15 @@ include_directories(/usr/include)
 link_directories(/usr/lib)
 
 
-
 set(LIB_SRC
         sylar/log.cpp
         sylar/util.cpp
         sylar/config.cpp
-    )
+)
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
 # add_library(mysylar STATIC ${LIB_SRC}) # for static library
 # SET_TARGET_PROPERTIES(sylar_static PROPERTIES OUTPUT_NAME "sylar") # for static library
-
 
 
 add_executable(test tests/test.cpp)
