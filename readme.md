@@ -45,6 +45,21 @@ for(size_t i = 0; i < node.size(); ++i){
 
 node.IsScalar();//直接输出出来
 ```
+
+配置系统的原则，约定优于配置：
+
+```cpp
+template<T,FromStr,ToStr>
+class ConfigVar;
+
+template<F,T>
+LexicalCast
+//容器的偏特化，目前支持vector
+```
+
+
+
+
 ## 协程库封装
 
 
