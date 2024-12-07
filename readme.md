@@ -62,7 +62,12 @@ class ConfigVar;
 template<F,T>
 LexicalCast
 //容器的偏特化，目前支持vector
+//list,set,map,unordered_set,unorder_map
+//map/unordered_map 支持key = std::string
+//Config::Lookup(key),key相同，类型不同的，不会报错
 ```
+
+
 
 ## 协程库封装
 
