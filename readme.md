@@ -3,6 +3,7 @@
 ## 课程目录
 
 -- 配置系统05：更多STL容器的支持
+-- 配置系统06：自定义类型的支持
 
 ## 开发环境
 
@@ -66,7 +67,8 @@ LexicalCast
 //map/unordered_map 支持key = std::string
 //Config::Lookup(key),key相同，类型不同的，不会报错
 ```
-
+自定义类型，需要实现sylar::LexicalCast,偏特化
+实现后，就可以支持Config解析自定义类型，自定义类型可以和常规stl容器一起使用。
 
 
 ## 协程库封装

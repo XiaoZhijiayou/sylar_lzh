@@ -33,6 +33,39 @@ system:
     key2: 120
     key3: 130
     key4: 110
+  str_int_vec_umap:
+    x: [ 10, 20, 30 ]
+    y: [ 30, 40, 10 ]
+
+class:
+  person:
+    name: John
+    age: 30
+    sex: true
+  map:
+     sylar1:
+        name: sylar01
+        age: 18
+        sex: false
+     sylar2:
+        name: sylar02
+        age: 19
+        sex: true
+  vec_map:
+       k1:
+         - name: m1
+           age: 20
+           sex: true
+         - name: m2
+           age: 21
+           sex: false
+       k2:
+         - name: m3
+           age: 22
+           sex: true
+         - name: m4
+           age: 23
+           sex: false
 
 
 
