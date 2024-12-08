@@ -65,7 +65,7 @@ void print_yaml(const YAML::Node node, int level) {
 
 void test_yaml() {
   YAML::Node root =
-      YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/log.yml");
+      YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/test.yml");
   print_yaml(root, 0);
   //SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << root;
 }
@@ -105,7 +105,7 @@ void test_config() {
   XX_M(g_int_umap_value_config, str_int_umap, before);
 
   YAML::Node root =
-      YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/log.yml");
+      YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/test.yml");
   sylar::Config::LoadFromYaml(root);
   SYLAR_LOG_INFO(SYLAR_LOG_ROOT())
       << "after : " << g_int_value_config->getValue();
@@ -137,6 +137,11 @@ class Person{
         << " sex="  << m_sex
         << "]";
     return ss.str();
+  }
+  bool operator==(const Person& oth) const{
+    return    m_name == oth.m_name
+           && m_age == oth.m_age
+           && m_sex == oth.m_sex;
   }
 };
 
@@ -189,10 +194,15 @@ void test_class() {
       SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "prefix: " << ": size=" << m.size();\
     }
 
+  g_person->addListener(10,[](const Person& old_value, const Person& new_value){
+    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "old_value=" << old_value.toString()
+                                     << "new_value=" << new_value.toString();
+  });
+
   XX_PM(g_person_map,"class.map before");
   SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "before: " << g_person_vec_map->toString();
 
-  YAML::Node root = YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/log.yml");
+  YAML::Node root = YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/test.yml");
   sylar::Config::LoadFromYaml(root);
   SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after: " << g_person->getValue().toString() << "-" << g_person->toString();
 

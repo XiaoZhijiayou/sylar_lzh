@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <vector>
 #include "log.h"
+#include <functional>
 
 namespace sylar {
 class ConfigVarBase {
@@ -233,6 +234,8 @@ template <class T, class FromStr = LexicalCast<std::string, T>,
 class ConfigVar : public ConfigVarBase {
  public:
   typedef std::shared_ptr<ConfigVar> ptr;
+  typedef std::function<void(const T& old_value, const T& new_value)> on_change_cb;//回调函数
+
   ConfigVar(const std::string& name, const T& default_value,
             const std::string& description = "")
       : ConfigVarBase(name, description), m_val(default_value) {}
@@ -261,10 +264,40 @@ class ConfigVar : public ConfigVarBase {
   }
 
   const T& getValue() const { return m_val; }
-  void setValue(const T& val) { m_val = val; }
+
+  void setValue(const T& v) {
+    if(v == m_val){
+      return;
+    }
+    for(auto& cb : m_cbs){
+      cb.second(m_val,v);
+    }
+    m_val = v;
+  }
+
   std::string getTypeName() const { return typeid(T).name(); }
+
+  void addListener(uint64_t key,on_change_cb cb){
+    m_cbs[key] = cb;
+  }
+
+  void delListener(uint64_t key){
+    m_cbs.erase(key);
+  }
+
+  on_change_cb getListener(uint64_t key){
+    auto it = m_cbs.find(key);
+    return it == m_cbs.end()? nullptr : it->second;
+  }
+
+  void clearListeners(){
+    m_cbs.clear();
+  }
+
  private:
   T m_val;
+  //变更回调函数数组，uint64_t key要求唯一，一般可以使用hash
+  std::map<uint64_t, on_change_cb> m_cbs;
 };
 
 class Config {

@@ -2,6 +2,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include "config.h"
 
 namespace sylar {
 
@@ -79,7 +80,7 @@ class NameFormatItem : public LogFormatter::FormatItem {
   NameFormatItem(const std::string& str = "") {}
   void format(std::ostream& os, Logger::ptr logger, LogLevel::Level level,
               LogEvent::ptr event) override {
-    os << logger->getName();
+    os << event->getLogger()->getName();
   }
 };
 
@@ -211,8 +212,12 @@ void Logger::delAppender(LogAppender::ptr appender) {
 void Logger::log(LogLevel::Level level, LogEvent::ptr event) {
   if (level >= m_level) {
     auto self = shared_from_this();
-    for (auto& i : m_appenders) {
-      i->log(self, level, event);
+    if(!m_appenders.empty()){
+      for (auto& i : m_appenders) {
+        i->log(self, level, event);
+      }
+    }else if(m_root){
+      m_root->log(level,event);
     }
   }
 }
@@ -388,10 +393,63 @@ void LogFormatter::init() {
 LoggerManager::LoggerManager() {
   m_root.reset(new Logger);
   m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
+  init();
 }
 Logger::ptr LoggerManager::getLogger(const std::string& name) {
   auto it = m_loggers.find(name);
-  return it == m_loggers.end() ? m_root : it->second;
+  if(it != m_loggers.end()){
+    return it->second;
+  }
+  Logger::ptr logger(new Logger(name));
+  logger->m_root = m_root;
+  m_loggers[name] = logger;
+  return logger;
+}
+
+struct LogAppenderDefine{
+  int type = 0;//1 File, 2 Stdout
+  LogLevel::Level m_level = LogLevel::UNKNOW;
+  std::string formatter;
+  std::string file;
+
+  bool operator==(const LogAppenderDefine& oth) const{
+    return type == oth.type
+        && m_level == oth.m_level
+        && formatter == oth.formatter
+        && file == oth.file;
+  }
+};
+
+struct LogDefine{
+  std::string name;
+  LogLevel::Level m_level = LogLevel::UNKNOW;
+  std::string formatter;
+  std::vector<LogAppenderDefine> appenders;
+  bool operator==(const LogDefine& oth) const{
+      return name == oth.name
+          && m_level == oth.m_level
+          && formatter == oth.formatter
+          && appenders == oth.appenders;
+  }
+  bool operator<(const LogDefine& oth) const{
+    return name < oth.name;
+  }
+};
+
+sylar::ConfigVar<std::set<LogDefine>> g_log_defines =
+    sylar::Config::Lookup("logs",std::set<LogDefine> (),"log config");
+
+struct LogIniter{
+    LogIniter() {
+      g_log_defines.addListener(0xF1E231,[](const std::set<LogDefine>& old_value,
+                                             const std::set<LogDefine>& new_value){
+      });
+    }
+};
+
+static LogIniter __log_init;
+void LoggerManager::init() {
+
 }
 
 }  // namespace sylar
