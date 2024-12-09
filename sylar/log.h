@@ -140,6 +140,7 @@ class LogFormatter {
 
 //日志输出地
 class LogAppender {
+friend  class Logger;
  public:
   typedef std::shared_ptr<LogAppender> ptr;
   virtual ~LogAppender() {}
@@ -147,13 +148,14 @@ class LogAppender {
   virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level,
                    LogEvent::ptr event) = 0;
   virtual  std::string toYamlString() = 0;
-  void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
+  void setFormatter(LogFormatter::ptr val);
   LogFormatter::ptr getFormatter() const { return m_formatter; }
   LogLevel::Level getLevel() const { return m_level; }
   void setLevel(LogLevel::Level val) { m_level = val; }
 
  protected:
   LogLevel::Level m_level = LogLevel::DEBUG;
+  bool m_hasFormatter = false;
   LogFormatter::ptr m_formatter;
 };
 
