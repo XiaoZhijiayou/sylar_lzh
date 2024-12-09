@@ -67,6 +67,7 @@ class LogLevel {
   };
 
   static const char* ToString(LogLevel::Level);
+  static LogLevel::Level FromString(const std::string& str);
 };
 
 class LogEvent {
@@ -129,10 +130,12 @@ class LogFormatter {
                         LogLevel::Level level, LogEvent::ptr event) = 0;
   };
   void init();
-
+  bool isError() const { return m_error; }
+  const std::string& getPattern() const { return m_pattern; }
  private:
   std::vector<FormatItem::ptr> m_items;
   std::string m_pattern;
+  bool m_error = false;
 };
 
 //日志输出地
@@ -143,7 +146,7 @@ class LogAppender {
 
   virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level,
                    LogEvent::ptr event) = 0;
-
+  virtual  std::string toYamlString() = 0;
   void setFormatter(LogFormatter::ptr val) { m_formatter = val; }
   LogFormatter::ptr getFormatter() const { return m_formatter; }
   LogLevel::Level getLevel() const { return m_level; }
@@ -172,10 +175,15 @@ friend class LoggerManager;
 
   void addAppender(LogAppender::ptr appender);
   void delAppender(LogAppender::ptr appender);
+  void clearAppenders();
   LogLevel::Level getLevel() const { return m_level; }
   void setLevel(LogLevel::Level val) { m_level = val; }
   const std::string& getName() const { return m_name; }
 
+  void setFormatter(LogFormatter::ptr val);
+  void setFormatter(const std::string& val);
+  LogFormatter::ptr getFormatter();
+  std::string toYamlString();
  private:
   std::string m_name;                       //日志名称
   LogLevel::Level m_level;                  //日志级别
@@ -189,7 +197,7 @@ class StdoutLogAppender : public LogAppender {
   typedef std::shared_ptr<StdoutLogAppender> ptr;
   void log(Logger::ptr logger, LogLevel::Level level,
            LogEvent::ptr event) override;
-
+  std::string toYamlString() override;
  private:
 };
 
@@ -200,7 +208,7 @@ class FileLogAppender : public LogAppender {
   FileLogAppender(const std::string& filename);
   void log(std::shared_ptr<Logger> logger, LogLevel::Level level,
            LogEvent::ptr event) override;
-
+  std::string toYamlString() override;
   //重新打开文件，文件打开成功返回true
   bool reopen();
 
@@ -215,7 +223,7 @@ class LoggerManager {
   Logger::ptr getLogger(const std::string& name);
   void init();
   Logger::ptr getRoot() const { return m_root; }
-
+  std::string toYamlString();
  private:
   std::map<std::string, Logger::ptr> m_loggers;
   Logger::ptr m_root;

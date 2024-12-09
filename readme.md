@@ -7,6 +7,8 @@
 -- 配置系统06：自定义类型的支持
 -- 配置系统07：配置变更事件
 -- 配置系统08：日志系统整合
+-- 配置系统09：日志系统整合02
+-- 配置系统10:日志系统整合03
 ```
 
 
@@ -104,6 +106,17 @@ logs:
 static Logger::ptr g_log = SYLAR_LOG_NAME("system");
 //m_root,m_system-m_root 当logger的appenders为空，使用root写logger
 ```
+```cpp
+//定义LogDefine LogAppenderDefine,偏特化 LexicalCast
+//实现日志配置解析
+```
+
+```cpp
+
+```
+遗留问题：
+1.appender定于的formatter读取yaml的时候，没有被初始化掉
+2.去掉额外的调试日志
 
 
 ## 协程库封装

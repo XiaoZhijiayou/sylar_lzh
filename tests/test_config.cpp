@@ -2,8 +2,9 @@
 #include "../sylar/config.h"
 #include "../sylar/log.h"
 #include "yaml-cpp/yaml.h"
+#include <iostream>
 
-#if 0
+
 sylar::ConfigVar<int>::ptr g_int_value_config =
     sylar::Config::Lookup("system.port", (int)8080, "system port");
 
@@ -119,7 +120,7 @@ void test_config() {
   XX_M(g_int_map_value_config, str_int_map, after);
   XX_M(g_int_umap_value_config, str_int_umap, after);
 }
-#endif
+
 
 /**
  * 自定义类型的支持
@@ -210,8 +211,23 @@ void test_class() {
   SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after: " << g_person_vec_map->toString();
 }
 
+void test_log(){
+  static sylar::Logger::ptr system_log = SYLAR_LOG_NEAME("system");
+  SYLAR_LOG_INFO(system_log) << "hello system" << std::endl;
+  std::cout<<sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+  YAML::Node root =
+      YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/log.yml");
+  sylar::Config::LoadFromYaml(root);
+  std::cout << "===========================================" << std::endl;
+  std::cout<<sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+  std::cout << "===========================================" << std::endl;
+  std::cout << root <<std::endl;
+  SYLAR_LOG_INFO(system_log) << "hello system" << std::endl;
+}
 int main(int argc, char** argv) {
-  test_class();
+//test_class();
 //  test_config();
+//test_yaml();
+  test_log();
   return 0;
 }
