@@ -38,7 +38,8 @@ class ConfigVarBase {
 template <class F, class T>
 class LexicalCast {
  public:
-  T operator()(const F& v) const { return boost::lexical_cast<T>(v); }
+  T operator()(const F& v) const { return boost::lexical_cast<T>(v);
+  }
 };
 
 /**
