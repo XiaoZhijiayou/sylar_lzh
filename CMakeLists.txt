@@ -16,6 +16,7 @@ set(LIB_SRC
         sylar/log.cpp
         sylar/util.cpp
         sylar/config.cpp
+        sylar/thread.cpp
 )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
@@ -24,16 +25,29 @@ force_redefine_file_macro_for_sources(sylar) #___FILE___
 # SET_TARGET_PROPERTIES(sylar_static PROPERTIES OUTPUT_NAME "sylar") # for static library
 
 
+
+
+set(LIBS
+        sylar
+        pthread
+        yaml-cpp
+)
+
 add_executable(test tests/test.cpp)
 add_dependencies(test sylar)
 force_redefine_file_macro_for_sources(test) #___FILE___
-target_link_libraries(test sylar)
+target_link_libraries(test ${LIBS})
 
 
 add_executable(test_config tests/test_config.cpp)
 add_dependencies(test_config sylar)
 force_redefine_file_macro_for_sources(test_config) #___FILE___
-target_link_libraries(test_config sylar yaml-cpp)
+target_link_libraries(test_config  ${LIBS})
+
+add_executable(test_thread tests/test_thread.cpp)
+add_dependencies(test_thread sylar)
+force_redefine_file_macro_for_sources(test_thread) #___FILE___
+target_link_libraries(test_thread  ${LIBS})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
