@@ -25,6 +25,7 @@ gcc 14.2.1
 cmake 3.30.3
 yaml-cpp
 boost
+pthread
 ```
 
 ## 项目路径
