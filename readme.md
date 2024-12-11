@@ -13,7 +13,7 @@
 -- 配置系统12:日志和配置小结部分
 
 -- 线程模块01
-
+-- 线程模块02:信号量和互斥量
 ```
 
 
@@ -128,6 +128,10 @@ static Logger::ptr g_log = SYLAR_LOG_NAME("system");
 ## 线程库
 ```
 Thread,Mutex(锁机制)
+
+pthread pthread_create
+互斥量 mutex
+信号量 semaphore
 ```
 
 
