@@ -62,14 +62,8 @@ private:
  bool m_locked;
 };
 
-/**
- *  @brief 线程安全的互斥锁
- * */
-class Mutex {
-public:
 
-private:
-};
+
 
 /**
  *  @brief 线程安全的读锁守护
@@ -135,6 +129,45 @@ class WriteSocpedLockImpl {
   bool m_locked;
 };
 
+/**
+ *  @brief 线程安全的互斥锁
+ * */
+class Mutex{
+public:
+  typedef sylar::SocpedLockImpl<Mutex> Lock;
+  Mutex() {
+    pthread_mutex_init(&m_mutex,nullptr);
+  }
+
+  ~Mutex() {
+    pthread_mutex_destroy(&m_mutex);
+  }
+
+  void lock() {
+    pthread_mutex_lock(&m_mutex);
+  }
+
+  void unlock() {
+    pthread_mutex_unlock(&m_mutex);
+  }
+
+private:
+  pthread_mutex_t m_mutex;
+};
+
+class NullMutex {
+public:
+  typedef sylar::SocpedLockImpl<NullMutex> Lock;
+
+  NullMutex() {}
+
+  ~NullMutex() {}
+
+  void lock() {}
+
+  void unlock() {}
+
+};
 
 /**
  *  @brief 线程安全的读写锁
@@ -186,6 +219,28 @@ class RWMutex {
  private:
 
   pthread_rwlock_t m_lock;
+};
+
+/**
+ * @brief 空的读写锁
+ * */
+class NullRWMutex {
+ public:
+  //局部读锁
+  typedef ReadSocpedLockImpl<NullRWMutex> ReadLock;
+
+  //局部写锁
+  typedef WriteSocpedLockImpl<NullRWMutex> WriteLock;
+
+  NullRWMutex() {}
+
+  ~NullRWMutex() {}
+
+  void rdlock() {}
+
+  void wrlock() {}
+
+  void unlock() {}
 };
 
 

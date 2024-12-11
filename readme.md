@@ -14,6 +14,8 @@
 
 -- 线程模块01
 -- 线程模块02:信号量和互斥量
+-- 线程模块03:日志模块整合
+
 ```
 
 
@@ -133,6 +135,7 @@ Thread,Mutex(锁机制)
 pthread pthread_create
 互斥量 mutex
 信号量 semaphore
+和log来整合
 ```
 
 
