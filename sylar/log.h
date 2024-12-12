@@ -119,9 +119,10 @@ class LogFormatter {
   typedef std::shared_ptr<LogFormatter> ptr;
   LogFormatter(const std::string& pattern);
   //%t        %threadid %m%n
-  std::string format(std::shared_ptr<Logger> logger, LogLevel::Level level,
+  std::string format( std::shared_ptr<Logger> logger, LogLevel::Level level,
                      LogEvent::ptr event);
-
+  std::ostream& format(std::ostream& ofs, std::shared_ptr<Logger> logger, LogLevel::Level level,
+                     LogEvent::ptr event);
  public:
   class FormatItem {
    public:

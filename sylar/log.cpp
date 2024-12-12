@@ -344,7 +344,7 @@ void FileLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level,
       m_lastTime = now;
     }
     MutexType::Lock lock(m_mutex);
-    if(m_filestream << m_formatter->format(logger, level, event)){
+    if(!m_formatter->format(m_filestream,logger,level,event)){
       std::cout << "error" << std::endl;
     }
   }
@@ -401,7 +401,15 @@ LogFormatter::LogFormatter(const std::string& pattern) : m_pattern(pattern) {
   init();
 }
 
-std::string LogFormatter::format(std::shared_ptr<Logger> logger,
+std::ostream& LogFormatter::format(std::ostream& ofs, std::shared_ptr<Logger> logger, LogLevel::Level level,
+                   LogEvent::ptr event){
+  for(auto& i : m_items){
+    i->format(ofs,logger,level,event);
+  }
+  return ofs;
+}
+
+std::string LogFormatter::format( std::shared_ptr<Logger> logger,
                                  LogLevel::Level level, LogEvent::ptr event) {
   std::stringstream ss;
   for (auto& i : m_items) {
@@ -682,7 +690,7 @@ sylar::ConfigVar<std::set<LogDefine>>::ptr g_log_defines =
 
 struct LogIniter{
     LogIniter() {
-      g_log_defines->addListener(0xF1E231,[](const std::set<LogDefine>& old_value,
+      g_log_defines->addListener([](const std::set<LogDefine>& old_value,
                                              const std::set<LogDefine>& new_value){
           SYLAR_LOG_INFO(SYLAR_LOG_ROOT())<<"on_logger_conf_changed";
           //新增
