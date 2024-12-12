@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include <string>
 #include <semaphore.h>
+#include <atomic>
 
 namespace sylar {
 
@@ -243,6 +244,51 @@ class NullRWMutex {
   void unlock() {}
 };
 
+class SpinLock {
+public:
+ typedef SocpedLockImpl<SpinLock> Lock;
+  SpinLock() {
+    pthread_spin_init(&m_mutex, 0);
+  }
+  ~SpinLock() {
+    pthread_spin_destroy(&m_mutex);
+  }
+
+  void lock() {
+    pthread_spin_lock(&m_mutex);
+  }
+
+  void unlock() {
+    pthread_spin_unlock(&m_mutex);
+  }
+
+private:
+ pthread_spinlock_t m_mutex;
+};
+
+class CASLock {
+public:
+
+  typedef SocpedLockImpl<CASLock> Lock;
+
+  CASLock() {
+    m_mutex.clear();
+  }
+
+  ~CASLock() {
+
+  }
+
+  void lock() {
+    while (std::atomic_flag_test_and_set_explicit(&m_mutex, std::memory_order_acquire));
+  }
+
+  void unlock(){
+    std::atomic_flag_clear_explicit(&m_mutex, std::memory_order_release);
+  }
+private:
+  volatile std::atomic_flag m_mutex;
+};
 
 class Thread {
  public:

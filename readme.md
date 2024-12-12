@@ -15,6 +15,8 @@
 -- 线程模块01
 -- 线程模块02:信号量和互斥量
 -- 线程模块03:日志模块整合
+-- 线程模块04:日志模块整合02
+-- 线程模块05:配置模块整合
 
 ```
 
@@ -136,6 +138,12 @@ pthread pthread_create
 互斥量 mutex
 信号量 semaphore
 和log来整合
+Logger,Appender,
+
+pthread_spinlock_t:用于提升性能
+Spinlock,替换Mutex，
+写文件，周期性，reopen
+
 ```
 
 
