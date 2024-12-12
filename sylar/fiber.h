@@ -17,7 +17,8 @@ public:
     HOLD,
     EXEC,
     TERM,
-    READY
+    READY,
+    EXCEPT
   };
 
 private:
@@ -32,6 +33,8 @@ public:
     void swapIn();
     //切换到后台执行
     void swapOut();
+
+    uint64_t getId() const { return m_id; }
 
 public:
     //设置当前的协程
@@ -50,10 +53,7 @@ public:
      * 执行完成返回到线程的主协程
      * */
     static  void MainFunc();
-
-    /**
-     *
-     * */
+    static  uint64_t GetFiberId();
 private:
     //协程ID
     uint64_t m_id = 0;

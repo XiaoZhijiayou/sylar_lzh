@@ -7,6 +7,7 @@
 #include "singleton.h"
 #include "util.h"
 #include "macro.h"
+#include "fiber.h"
 
 
 #endif /* __SYLAR_SYLAR_H__ */

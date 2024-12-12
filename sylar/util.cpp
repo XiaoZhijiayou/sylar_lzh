@@ -1,6 +1,7 @@
 #include "util.h"
 #include "log.h"
 #include <execinfo.h>
+#include "fiber.h"
 
 namespace sylar {
 sylar::Logger::ptr g_logger = SYLAR_LOG_NEAME("system");
@@ -8,7 +9,7 @@ pid_t GetThreadId() {
   return syscall(SYS_gettid);
 }
 uint32_t GetFiberId() {
-  return 0;
+  return sylar::Fiber::GetFiberId();
 }
 /**
  * 堆栈回溯（Backtrace） 的函数 Backtrace，

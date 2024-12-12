@@ -17,6 +17,7 @@ set(LIB_SRC
         sylar/util.cpp
         sylar/config.cpp
         sylar/thread.cpp
+        sylar/fiber.cpp
 )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
@@ -53,6 +54,11 @@ add_executable(test_util tests/test_util.cpp)
 add_dependencies(test_util sylar)
 force_redefine_file_macro_for_sources(test_util) #___FILE___
 target_link_libraries(test_util  ${LIBS})
+
+add_executable(test_fiber tests/test_fiber.cpp)
+add_dependencies(test_fiber sylar)
+force_redefine_file_macro_for_sources(test_fiber) #___FILE___
+target_link_libraries(test_fiber  ${LIBS})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
