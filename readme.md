@@ -21,7 +21,7 @@
 -- 协程模块01
 -- 协程模块02
 -- 协程模块03
-
+-- 协程模块04
 
 ```
 
@@ -158,11 +158,16 @@ ucontext_t。
 marco 
 
 ```
+Fiber::GetThis()
 Thread->main_fiber <------> sub_fiber
             |
             |
             v
         sub_fiber
+```
+
+```
+
 ```
 
 ## socket函数库

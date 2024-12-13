@@ -138,6 +138,7 @@ Fiber::ptr Fiber::GetThis(){
   t_threadFiber = main_fiber;
   return t_fiber->shared_from_this();
 }
+
 //协程切换到后台，并且设置为Ready状态
 void Fiber::YieldToReady(){
   Fiber::ptr cur = GetThis();
@@ -170,6 +171,10 @@ void Fiber::MainFunc(){
     cur->m_state = EXCEPT;
     SYLAR_LOG_ERROR(g_logger) << "Fiber Except";
   }
+  auto raw_ptr = cur.get();
+  cur.reset();
+  raw_ptr->swapOut();
+  SYLAR_ASSERT2(false,"never reach fiber_id=" + std::to_string(raw_ptr->getId()));
 }
 
 }
