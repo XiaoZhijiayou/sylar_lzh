@@ -23,6 +23,11 @@
 -- 协程模块03
 -- 协程模块04
 
+-- 协程调度模块01
+-- 协程调度模块02
+-- 协程调度模块03
+-- 协程调度模块04
+-- 协程调度模块05
 ```
 
 
@@ -165,9 +170,31 @@ Thread->main_fiber <------> sub_fiber
             v
         sub_fiber
 ```
-
+- 协程调度模块scheduel
 ```
+        1 ----  N   1 ----- M
+scheduler ---> thread ----> fiber
+1.scheduel 线程池，分配一组线程
+2.协程调度器，将协程，指定到相应的线程上去执行
 
+
+
+N个线程对上m个协程这样的结构，协程可以在线程之间自由切换
+m_threads
+<function<void()>, fiber, thread_io>  m_fibers
+
+schedule(func/fiber)
+
+start()
+stop()
+run()
+
+1.设置当前线程的scheduler
+2.设置当前的线程的run,fiber
+3.协程调度循环while(true)
+    1.协程消息队列里面是否有任务
+    2.无任务执行，执行idle
+    
 ```
 
 ## socket函数库
