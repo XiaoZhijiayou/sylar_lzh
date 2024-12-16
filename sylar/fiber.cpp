@@ -50,6 +50,7 @@ Fiber::Fiber(){
   if(getcontext(&m_ctx)){
     SYLAR_ASSERT2(false,"getcontext");
   }
+//  SYLAR_LOG_DEBUG(g_logger) << "Fiber::Fiber id = " << Fiber::GetFiberId();
   ++s_fiber_count;
   SYLAR_LOG_DEBUG(g_logger) << "Fiber::Fiber main";
 }
@@ -72,6 +73,7 @@ Fiber::Fiber(std::function<void()> cb, size_t stack_size,bool use_caller)
       } else{
         makecontext(&m_ctx,&Fiber::CallerMainFunc,0);
       }
+      SYLAR_LOG_DEBUG(g_logger) << "Fiber::Fiber id = " << m_id;
 }
 
 Fiber::~Fiber(){

@@ -98,7 +98,6 @@ void Scheduler::Stop(){
     for(size_t i = 0; i < m_threadCount; i++){
       trickle();
     }
-
     if(m_rootFiber){
       trickle();
     }
