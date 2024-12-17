@@ -66,6 +66,10 @@ class Scheduler {
   virtual bool stopping();
   virtual void idle();
   void setThis();
+  /**
+   * @brief 是否有空闲线程
+   * */
+  bool hasIdleThreads() {return m_idleThreadCount > 0;}
  private:
   template <class FiberOrCb>
   bool scheduleNoLock(FiberOrCb fc, int thread = -1){

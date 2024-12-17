@@ -29,6 +29,25 @@ class IOManager : public Scheduler{
       /// 事件的回调函数
       std::function<void()> cb;
     };
+    /**
+     * @brief 获取事件上下文
+     * @param[in,out] event 事件类型
+     * @return 返回对应事件的上下文
+     * */
+    EventContext& getContext(Event event);
+
+    /**
+     * @brief 重置事件上下文
+     * @param[in,out] ctx 待重置的上下文类
+     * */
+    void resetContext(EventContext& ctx);
+
+    /**
+     * @brief 触发事件
+     * @param[in] event 事件类型
+     * */
+    void triggerEvent(Event event);
+
     /// 事件相关的句柄
     int fd = 0;
     /// 读事件的上下文
