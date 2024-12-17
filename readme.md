@@ -29,6 +29,10 @@
 -- 协程调度模块04
 -- 协程调度模块05
 -- 协程调度模块06
+
+-- IO协程调度器01
+
+
 ```
 
 
@@ -196,6 +200,28 @@ run()
     1.协程消息队列里面是否有任务
     2.无任务执行，执行idle
     
+```
+
+```
+IOManager (epoll) ----> Scheduler
+    |
+    |
+    |
+    v
+    idle (epoll_wait)
+    
+    信号量
+PutMessage(msg,) +信号量1
+message_queue
+    |
+    |----- Thread
+    |----- Thread
+         wait()-信号量1   RecvMessage(msg,)
+         
+异步IO，等待数据返回。在epoll_wait等待，没有消息回来会阻塞掉epoll_wait
+
+子线程在idle的时候监控管道的读端，然后epoll_wait阻塞，当需要唤醒子线程的时候向管道的写端写入数据即可，
+然后子线程的epoll会调用事件的处理函数，反应堆中调用yield返回调用协程
 ```
 
 ## socket函数库
