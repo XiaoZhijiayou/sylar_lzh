@@ -49,7 +49,7 @@ IOManager::IOManager(size_t threads, bool use_caller, const std::string& name)
   SYLAR_ASSERT(m_epfd > 0);
 
   int rt = pipe(m_trickleFds);
-  SYLAR_ASSERT(rt);
+  SYLAR_ASSERT(!rt);
 
   epoll_event event;
   memset(&event,0,sizeof(epoll_event));
@@ -57,10 +57,10 @@ IOManager::IOManager(size_t threads, bool use_caller, const std::string& name)
   event.data.fd = m_trickleFds[0];
 
   rt = fcntl(m_trickleFds[0],F_SETFL,O_NONBLOCK);
-  SYLAR_ASSERT(rt);
+  SYLAR_ASSERT(!rt);
 
   rt = epoll_ctl(m_epfd,EPOLL_CTL_ADD, m_trickleFds[0],&event);
-  SYLAR_ASSERT(rt);
+  SYLAR_ASSERT(!rt);
   contextResize(32);
   Scheduler::Start();
 }
@@ -91,7 +91,7 @@ void IOManager::contextResize(size_t size){
 int IOManager::addEvent(int fd, Event event, std::function<void()> cb){
   FdContext* fd_ctx = nullptr;
   RWMutexType::ReadLock lock(m_mutex);
-  if(m_fdContexts.size() > fd){
+  if((int)m_fdContexts.size() > fd){
     fd_ctx = m_fdContexts[fd];
     lock.unlock();
   }else{
@@ -138,7 +138,7 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb){
 
 bool IOManager::delEvent(int fd, Event event){
   RWMutexType::ReadLock lock(m_mutex);
-  if(m_fdContexts.size() <= fd){
+  if((int)m_fdContexts.size() <= fd){
     return false;
   }
   FdContext* fd_ctx = m_fdContexts[fd];
@@ -169,7 +169,7 @@ bool IOManager::delEvent(int fd, Event event){
 
 bool IOManager::cancelEvent(int fd, Event event){
   RWMutexType::ReadLock lock(m_mutex);
-  if(m_fdContexts.size() <= fd){
+  if((int)m_fdContexts.size() <= fd){
     return false;
   }
   FdContext* fd_ctx = m_fdContexts[fd];
