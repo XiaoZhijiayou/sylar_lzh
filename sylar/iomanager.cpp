@@ -245,10 +245,81 @@ void IOManager::trickle(){
 }
 
 bool IOManager::stopping(){
-
+  return Scheduler::stopping()
+      && m_pendingEventCount == 0;
 }
 void IOManager::idle(){
+  SYLAR_LOG_DEBUG(g_logger) << "idle";
+  const uint64_t MAX_EVENTS = 256;
+  epoll_event* events = new epoll_event[MAX_EVENTS]();
+  std::shared_ptr<epoll_event> shared_events(events,[](epoll_event* ptr ){
+    delete[] ptr;
+  }); /// 通过智能指针加了一个析构的方法
 
+  while (true){
+    if(stopping()){
+      SYLAR_LOG_INFO(g_logger) << "name=" << getName()
+                                << " idle stopping exit";
+      break;
+    }
+    int rt = 0;
+    do{
+      static const int MAX_TIMEOUT = 3000;
+      rt = epoll_wait(m_epfd,events,64,MAX_TIMEOUT);
+      if(rt < 0 && errno == EINTR){
+      } else{
+        break;
+      }
+    } while (true);
+    for(int i = 0; i < rt; i++){
+      epoll_event& event = events[i];
+      if(event.data.fd == m_trickleFds[0]){
+        uint8_t dummy;
+        while (read(m_trickleFds[0],&dummy,1) == 1);
+        continue;
+      }
+      FdContext* fd_ctx = (FdContext*)event.data.ptr;
+      FdContext::MutexType::Lock lock(fd_ctx->mutex);
+      if(event.events & (EPOLLERR | EPOLLHUP)){
+        /// 如果它是错误或者中断的话，就把这个event改一下
+        event.events |= (EPOLLIN | EPOLLOUT) & fd_ctx->events;
+      }
+      int real_events = NONE;
+      if(event.events & EPOLLIN){
+        real_events |= READ;
+      }
+      if(event.events & EPOLLOUT){
+        real_events |= WRITE;
+      }
+      if((fd_ctx->events & real_events) == NONE){
+        continue;
+      }
+      /// 将real_events 与 fd_ctx->events 上下文上的事件移动出来
+      int left_events = (fd_ctx->events & ~real_events);
+      int op = left_events ? EPOLL_CTL_MOD : EPOLL_CTL_DEL;
+      event.events = EPOLLET | left_events;
+
+      int rt2 = epoll_ctl(m_epfd, op, fd_ctx->fd, &event);
+      if(rt2){
+        SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << "):"
+                                  << op << "," << fd_ctx->fd << "," << (EPOLL_EVENTS)event.events << "):"
+                                  << rt2 << "(" << errno << ") (" << strerror(errno) << ")";
+        continue;
+      }
+      if(real_events & READ){
+        fd_ctx->triggerEvent(READ);
+        --m_pendingEventCount;
+      }
+      if(real_events & WRITE){
+        fd_ctx->triggerEvent(WRITE);
+        --m_pendingEventCount;
+      }
+    }
+    Fiber::ptr cur = Fiber::GetThis();
+    auto raw_ptr = cur.get();
+    cur.reset();
+    raw_ptr->swapOut();
+  }
 }
 
 }
