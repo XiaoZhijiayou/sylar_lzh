@@ -21,6 +21,7 @@ set(LIB_SRC
         sylar/mutex.cpp
         sylar/scheduler.cpp
         sylar/iomanager.cpp
+        sylar/timer.cpp
 )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
