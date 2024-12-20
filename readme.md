@@ -41,6 +41,9 @@
 -- IO协程调度器07：定时器
 
 
+-- Socket IO Hook01
+-- Socket IO Hook02
+
 ```
 
 
@@ -237,12 +240,23 @@ Timer -> addTimer() --> cancel()
 获取当前的定时器触发距离现在的时间差
 返回当前需要触发的定时器
 ```
-
-
-
-定时器的精度是毫秒级的
-
+```
+         [Fiber]
+            ^ N                   [Timer]
+            |                       ^
+            | 1                     |
+         [Thread]                   |
+            ^ M              [TimerManager]
+            |                       ^
+            |                       |
+            | 1                     |
+        [Scheduler] <------ [IOManager(epoll)]
+```
+## HOOK
+    sleep
+    usleep
 ## socket函数库
+
 
 ## http协议开发
 

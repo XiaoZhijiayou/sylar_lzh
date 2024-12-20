@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include <list>
-
+#include "hook.h"
 
 namespace sylar{
 
@@ -121,6 +121,7 @@ void Scheduler::setThis(){
 
 void Scheduler::run() {
     SYLAR_LOG_DEBUG(g_logger) << m_name << "run";
+    set_hook_enable(true);
     setThis();
     if(sylar::GetThreadId() != m_rootThread){
       t_sheduler_fiber = Fiber::GetThis().get();

@@ -22,6 +22,7 @@ set(LIB_SRC
         sylar/scheduler.cpp
         sylar/iomanager.cpp
         sylar/timer.cpp
+        sylar/hook.cpp
 )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
@@ -34,6 +35,7 @@ force_redefine_file_macro_for_sources(sylar) #___FILE___
 
 set(LIBS
         sylar
+        dl
         pthread
         yaml-cpp
 )
@@ -74,6 +76,11 @@ add_executable(test_iomanager tests/test_iomanager.cpp)
 add_dependencies(test_iomanager sylar)
 force_redefine_file_macro_for_sources(test_iomanager) #___FILE___
 target_link_libraries(test_iomanager  ${LIBS})
+
+add_executable(test_hook tests/test_hook.cpp)
+add_dependencies(test_hook sylar)
+force_redefine_file_macro_for_sources(test_hook) #___FILE___
+target_link_libraries(test_hook  ${LIBS})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
