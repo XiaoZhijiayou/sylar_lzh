@@ -3,6 +3,7 @@
 
 #include <yaml-cpp/yaml.h>
 #include <boost/lexical_cast.hpp>
+#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -12,9 +13,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <functional>
-#include "thread.h"
 #include "log.h"
+#include "thread.h"
 
 namespace sylar {
 class ConfigVarBase {
@@ -39,8 +39,7 @@ class ConfigVarBase {
 template <class F, class T>
 class LexicalCast {
  public:
-  T operator()(const F& v) const { return boost::lexical_cast<T>(v);
-  }
+  T operator()(const F& v) const { return boost::lexical_cast<T>(v); }
 };
 
 /**
@@ -237,7 +236,8 @@ class ConfigVar : public ConfigVarBase {
  public:
   typedef RWMutex RWMutexType;
   typedef std::shared_ptr<ConfigVar> ptr;
-  typedef std::function<void(const T& old_value, const T& new_value)> on_change_cb;//回调函数
+  typedef std::function<void(const T& old_value, const T& new_value)>
+      on_change_cb;  //回调函数
 
   ConfigVar(const std::string& name, const T& default_value,
             const std::string& description = "")
@@ -261,13 +261,12 @@ class ConfigVar : public ConfigVarBase {
     } catch (std::exception& e) {
       SYLAR_LOG_ERROR(SYLAR_LOG_ROOT())
           << "configVar::toString exception" << e.what()
-          << "convert: string to " << typeid(m_val).name()
-          << " - " << str;
+          << "convert: string to " << typeid(m_val).name() << " - " << str;
     }
     return false;
   }
 
-  const T getValue()  const{
+  const T getValue() const {
     RWMutexType::ReadLock lock(m_mutex);
     return m_val;
   }
@@ -275,11 +274,11 @@ class ConfigVar : public ConfigVarBase {
   void setValue(const T& v) {
     {
       RWMutexType::ReadLock lock(m_mutex);
-      if(v == m_val){
+      if (v == m_val) {
         return;
       }
-      for(auto& cb : m_cbs){
-        cb.second(m_val,v);
+      for (auto& cb : m_cbs) {
+        cb.second(m_val, v);
       }
     }
     RWMutexType::WriteLock lock(m_mutex);
@@ -288,7 +287,7 @@ class ConfigVar : public ConfigVarBase {
 
   std::string getTypeName() const { return typeid(T).name(); }
 
-  uint64_t addListener(on_change_cb cb){
+  uint64_t addListener(on_change_cb cb) {
     static uint64_t s_func_id = 0;
     RWMutexType::WriteLock lock(m_mutex);
     ++s_func_id;
@@ -296,18 +295,18 @@ class ConfigVar : public ConfigVarBase {
     return s_func_id;
   }
 
-  void delListener(uint64_t key){
+  void delListener(uint64_t key) {
     RWMutexType::WriteLock lock(m_mutex);
     m_cbs.erase(key);
   }
 
-  on_change_cb getListener(uint64_t key){
+  on_change_cb getListener(uint64_t key) {
     RWMutexType::ReadLock lock(m_mutex);
     auto it = m_cbs.find(key);
-    return it == m_cbs.end()? nullptr : it->second;
+    return it == m_cbs.end() ? nullptr : it->second;
   }
 
-  void clearListeners(){
+  void clearListeners() {
     RWMutexType::WriteLock lock(m_mutex);
     m_cbs.clear();
   }
@@ -330,15 +329,16 @@ class Config {
       const std::string& description = "") {
     RWMutexType ::WriteLock lock(GetMutex());
     auto it = GetDatas().find(name);
-    if(it != GetDatas().end()){
+    if (it != GetDatas().end()) {
       auto tmp = std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
-      if(tmp){
+      if (tmp) {
         SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
         return tmp;
-      }else{
-        SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists but type not match "
-                                          << typeid(T).name() << " real_type= " << it->second->getTypeName()
-                                          << " " << it->second->toString();
+      } else {
+        SYLAR_LOG_ERROR(SYLAR_LOG_ROOT())
+            << "Lookup name=" << name << " exists but type not match "
+            << typeid(T).name() << " real_type= " << it->second->getTypeName()
+            << " " << it->second->toString();
         return nullptr;
       }
     }
@@ -380,7 +380,6 @@ class Config {
     static RWMutexType s_mutex;
     return s_mutex;
   }
-
 };
 
 }  // namespace sylar

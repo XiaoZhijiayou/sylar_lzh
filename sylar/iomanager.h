@@ -4,26 +4,27 @@
 #include "scheduler.h"
 #include "timer.h"
 
-namespace sylar{
+namespace sylar {
 
-class IOManager : public Scheduler,public TimerManager {
+class IOManager : public Scheduler, public TimerManager {
  public:
   typedef std::shared_ptr<IOManager> ptr;
   typedef RWMutex RWMutexType;
 
-  enum Event{
+  enum Event {
     /// 无事件发生
-    NONE  = 0x0,
+    NONE = 0x0,
     /// 读事件(EPOLLIN)
-    READ  = 0x1,
+    READ = 0x1,
     /// 写事件(EPOLLOUT)
     WRITE = 0x4,
   };
+
  private:
-  struct FdContext{
+  struct FdContext {
     typedef Mutex MutexType;
 
-    struct EventContext{
+    struct EventContext {
       /// 事件执行的调度器
       Scheduler* scheduler = nullptr;
       /// 事件的协程
@@ -63,7 +64,8 @@ class IOManager : public Scheduler,public TimerManager {
   };
 
  public:
-  IOManager(size_t threads = 1, bool use_caller = true, const std::string& name = "");
+  IOManager(size_t threads = 1, bool use_caller = true,
+            const std::string& name = "");
 
   ~IOManager();
   /**
@@ -99,29 +101,29 @@ class IOManager : public Scheduler,public TimerManager {
   /**
    * @brief 返回当前的IOManager
    * */
-   static IOManager* GetThis();
+  static IOManager* GetThis();
 
-  protected:
+ protected:
+  void trickle() override;
+  bool stopping() override;
+  void idle() override;
+  void onTimerInsertedAtFront() override;
+  void contextResize(size_t size);
+  bool stopping(uint64_t& timeout);
 
-   void trickle() override;
-   bool stopping() override;
-   void idle() override;
-   void onTimerInsertedAtFront() override;
-   void contextResize(size_t size);
-   bool stopping(uint64_t& timeout);
-  private:
-   /// epoll 文件句柄
-   int m_epfd = 0;
-   /// pipe 文件句柄
-   int m_trickleFds[2];
-   /// 当前等待执行的事件数量
-   std::atomic<size_t> m_pendingEventCount = {0};
-   /// IOManager的Mutex
-   RWMutexType m_mutex;
-   /// socket事件上下文的容器
-   std::vector<FdContext*> m_fdContexts;
+ private:
+  /// epoll 文件句柄
+  int m_epfd = 0;
+  /// pipe 文件句柄
+  int m_trickleFds[2];
+  /// 当前等待执行的事件数量
+  std::atomic<size_t> m_pendingEventCount = {0};
+  /// IOManager的Mutex
+  RWMutexType m_mutex;
+  /// socket事件上下文的容器
+  std::vector<FdContext*> m_fdContexts;
 };
 
-}
+}  // namespace sylar
 
 #endif

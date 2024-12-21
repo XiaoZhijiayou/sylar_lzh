@@ -40,7 +40,7 @@ class Scheduler {
       MutexType::Lock lock(m_mutex);
       need_trickle = scheduleNoLock(fc, thread);
     }
-    if(need_trickle){
+    if (need_trickle) {
       trickle();
     }
   }
@@ -50,12 +50,12 @@ class Scheduler {
     bool need_trickle = false;
     {
       MutexType::Lock lock(m_mutex);
-      while (begin != end){
+      while (begin != end) {
         need_trickle = scheduleNoLock(&*begin) || need_trickle;
         ++begin;
       }
     }
-    if(need_trickle){
+    if (need_trickle) {
       trickle();
     }
   }
@@ -69,13 +69,14 @@ class Scheduler {
   /**
    * @brief 是否有空闲线程
    * */
-  bool hasIdleThreads() {return m_idleThreadCount > 0;}
+  bool hasIdleThreads() { return m_idleThreadCount > 0; }
+
  private:
   template <class FiberOrCb>
-  bool scheduleNoLock(FiberOrCb fc, int thread = -1){
+  bool scheduleNoLock(FiberOrCb fc, int thread = -1) {
     bool need_trickle = m_fibers.empty();
     FiberAndThread ft(fc, thread);
-    if(ft.fiber || ft.cb){
+    if (ft.fiber || ft.cb) {
       m_fibers.push_back(ft);
     }
     return need_trickle;
@@ -116,13 +117,14 @@ class Scheduler {
   Fiber::ptr m_rootFiber;
   /// 协程调度器名称
   std::string m_name;
+
  protected:
   /// 协程下的线程id数组
   std::vector<int> m_threadIds;
   /// 线程数量
   size_t m_threadCount = 0;
   /// 工作线程数量
-  std::atomic<size_t>  m_activeThreadCount = {0};
+  std::atomic<size_t> m_activeThreadCount = {0};
   /// 空闲线程数量
   std::atomic<size_t> m_idleThreadCount = {0};
   /// 是否正在停止
@@ -131,7 +133,7 @@ class Scheduler {
   bool m_autoStop = false;
   /// 主线程id
   int m_rootThread = 0;
-  };
-}
+};
+}  // namespace sylar
 
 #endif /* __SYLAR_SCHEDULER_H__ */
