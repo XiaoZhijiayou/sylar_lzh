@@ -236,6 +236,7 @@ LogEvent::LogEvent(std::shared_ptr<Logger> Logger, LogLevel::Level level,
 
 Logger::Logger(const std::string& name)
     : m_name(name), m_level(LogLevel::DEBUG) {
+  /// 设置日志格式化器的格式
   m_formatter.reset(new LogFormatter(
       "%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"));
 };
@@ -243,7 +244,6 @@ Logger::Logger(const std::string& name)
 void Logger::setFormatter(LogFormatter::ptr val) {
   MutexType::Lock lock(m_mutex);
   m_formatter = val;
-
   for (auto& i : m_appenders) {
     MutexType::Lock ll(i->m_mutex);
     if (!i->m_hasFormatter) {
@@ -432,12 +432,16 @@ std::string LogFormatter::format(std::shared_ptr<Logger> logger,
 void LogFormatter::init() {
   // std, format,type
   std::vector<std::tuple<std::string, std::string, int>> vec;
+  /// 这个是用来存储普通文本的
   std::string nstr;
   for (std::size_t i = 0; i < m_pattern.size(); ++i) {
+    /// 这个是如果它的前面没有%的话先将当前的i位置的文本加上去
     if (m_pattern[i] != '%') {
       nstr.append(1, m_pattern[i]);
       continue;
     }
+    /// 下面才是有了%之后的逻辑
+    /// 这个情况就是将%%其中的第二个%加到普通文本里面去
     if ((i + 1) < m_pattern.size()) {
       if (m_pattern[i + 1] == '%') {
         nstr.append(1, '%');
@@ -445,19 +449,25 @@ void LogFormatter::init() {
       }
     }
 
-    std::size_t n = i + 1;
-    int fmt_status = 0;
-    std::size_t fmt_begin = 0;
 
+    std::size_t n = i + 1;
+    /// 这个是用来表明当前是否进入了编辑fmt阶段，就是%d对应的{}里面的部分
+    int fmt_status = 0;
+    /// 记录格式化项开始的位置 ：其中的例子就是%d{%Y-%m-%d %H:%M:%S} %m 其中fmt_begin就代表{的位置
+    std::size_t fmt_begin = 0;
+    /// str就代表上面的 d
     std::string str;
+    /// fmt就代表%Y-%m-%d %H:%M:%S
     std::string fmt;
     while (n < m_pattern.size()) {
       if (!fmt_status && (!isalpha(m_pattern[n]) && m_pattern[n] != '{' &&
                           m_pattern[n] != '}')) {
+        /// 这个情况是当n走到下一个非字母、{、}的时候，然后才开始将str提取出来
         str = m_pattern.substr(i + 1, n - i - 1);
         break;
       }
       if (fmt_status == 0) {
+        /// 下面这个是用来解析当前%d的对应日志格式的
         if (m_pattern[n] == '{') {
           str = m_pattern.substr(i + 1, n - i - 1);
           //                    std::cout << "*" << fmt << std::endl;
@@ -468,6 +478,7 @@ void LogFormatter::init() {
         }
       } else if (fmt_status == 1) {
         if (m_pattern[n] == '}') {
+          /// 这个就是直接将日志格式取出来
           fmt = m_pattern.substr(fmt_begin + 1, n - fmt_begin - 1);
           //                    std::cout << "#" << fmt << std::endl;
           fmt_status = 0;
@@ -478,27 +489,38 @@ void LogFormatter::init() {
       ++n;
       if (n == m_pattern.size()) {
         if (str.empty()) {
+          /// 这个是将日志的%d对应的d取出来
           str = m_pattern.substr(i + 1);
         }
       }
     }
+    /// 下面就是将日志的格式插入到vec里面去
     if (fmt_status == 0) {
+      /// 这个部分是将文本类插入进去
       if (!nstr.empty()) {
         vec.push_back(std::make_tuple(nstr, std::string(), 0));
         nstr.clear();
       }
+      /// 这个部分就是将对应的格式话类插入进去
       vec.push_back(std::make_tuple(str, fmt, 1));
       i = n - 1;
     } else if (fmt_status == 1) {
+      /// 这个情况是因为如果mt_status在结束这个while之后还是等于1代表其中的格式解析部分是错的。
+      /// 所以需要将其格式解析部分提取出来进行判错
       std::cout << "pattern parse error : " << m_pattern << "-"
                 << m_pattern.substr(i) << std::endl;
       m_error = true;
       vec.push_back(std::make_tuple("<<pattern_error>>", fmt, 0));
     }
   }
+    /// 上面是for循环的结束
+
+    /// 下面这个是对文本类的收尾
   if (!nstr.empty()) {
     vec.push_back(std::make_tuple(nstr, "", 0));
   }
+
+  /// 是一个静态映射，将字符串映射到相应的日志格式化类
   static std::map<std::string,
                   std::function<FormatItem::ptr(const std::string& str)>>
       s_format_items = {
@@ -523,10 +545,13 @@ void LogFormatter::init() {
         XX(N, ThreadNameFormatItem),  //线程名称
 #undef XX
       };
+  /// 这个就是根据上面的vec部分保留的格式开始创建对应的FormatItem，日志格式化解析类
   for (auto& i : vec) {
+    /// 这一部分代表着是0，0就是普通的字符串
     if (std::get<2>(i) == 0) {
       m_items.push_back(FormatItem::ptr(new StringFormatItem(std::get<0>(i))));
     } else {
+      /// 这个对应的就是日志格类
       auto it = s_format_items.find(std::get<0>(i));
       if (it == s_format_items.end()) {
         m_items.push_back(FormatItem::ptr(

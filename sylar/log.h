@@ -317,59 +317,162 @@ class LogFormatter {
   bool m_error = false;
 };
 
-//日志输出地
+/// 日志输出地
 class LogAppender {
   friend class Logger;
 
  public:
   typedef std::shared_ptr<LogAppender> ptr;
   typedef SpinLock MutexType;
+  /**
+   * @brief 析构函数
+   * */
   virtual ~LogAppender() {}
 
+  /**
+   * @brief 写入日志
+   * @param[in] logger 日志器
+   * @param[in] level 日志级别
+   * @param[in] event 日志事件
+   * */
   virtual void log(std::shared_ptr<Logger> logger, LogLevel::Level level,
                    LogEvent::ptr event) = 0;
+  /**
+   * @brief 将日志输出目标的配置转换为YAML string
+   * */
   virtual std::string toYamlString() = 0;
 
+  /**
+   * @brief 更改日志格式器
+   * */
   void setFormatter(LogFormatter::ptr val);
+
+  /**
+   * @brief 获取日志格式器
+   * */
   LogFormatter::ptr getFormatter();
 
+  /**
+   * @brief 获取日志的级别
+   * */
   LogLevel::Level getLevel() const { return m_level; }
+
+  /**
+   * @brief 设置日志的级别
+   * */
   void setLevel(LogLevel::Level val) { m_level = val; }
 
  protected:
+  /// 日志级别
   LogLevel::Level m_level = LogLevel::DEBUG;
+  /// 是否由自己的日志格式
   bool m_hasFormatter = false;
+  /// Mutex
   MutexType m_mutex;
+  /// 日志格式化器
   LogFormatter::ptr m_formatter;
 };
 
-//日志输出器
+/// 日志器
 class Logger : public std::enable_shared_from_this<Logger> {
   friend class LoggerManager;
 
  public:
   typedef std::shared_ptr<Logger> ptr;
   typedef SpinLock MutexType;
+  /**
+   * @brief 构造函数
+   * @param[in] name 日志器名称
+   * */
   Logger(const std::string& name = "root");
 
+  /**
+   * @brief 写日志
+   * @param[in] level 日志级别
+   * @param[in] event 日志事件
+   * */
   void log(LogLevel::Level level, const LogEvent::ptr event);
 
+  /**
+    * @brief 写debug级别日志
+    * @param[in] event 日志事件
+    */
   void debug(LogEvent::ptr event);
+
+  /**
+    * @brief 写info级别日志
+    * @param[in] event 日志事件
+    */
   void info(LogEvent::ptr event);
+
+  /**
+    * @brief 写warn级别日志
+    * @param[in] event 日志事件
+    */
   void warn(LogEvent::ptr event);
+
+  /**
+    * @brief 写error级别日志
+    * @param[in] event 日志事件
+    */
   void error(LogEvent::ptr event);
+
+  /**
+    * @brief 写fatal级别日志
+    * @param[in] event 日志事件
+    */
   void fatal(LogEvent::ptr event);
 
+  /**
+    * @brief 添加日志目标
+    * @param[in] appender 日志目标
+    */
   void addAppender(LogAppender::ptr appender);
+
+  /**
+    * @brief 删除日志目标
+    * @param[in] appender 日志目标
+    */
   void delAppender(LogAppender::ptr appender);
+
+  /**
+    * @brief 清空日志目标
+    */
   void clearAppenders();
+
+  /**
+    * @brief 返回日志级别
+    */
   LogLevel::Level getLevel() const { return m_level; }
+
+  /**
+    * @brief 设置日志级别
+    */
   void setLevel(LogLevel::Level val) { m_level = val; }
+
+  /**
+    * @brief 返回日志名称
+    */
   const std::string& getName() const { return m_name; }
 
+  /**
+    * @brief 设置日志格式器
+    */
   void setFormatter(LogFormatter::ptr val);
+
+  /**
+   * @brief 设置日志格式模板
+   */
   void setFormatter(const std::string& val);
+
+  /**
+   * @brief 获取日志格式器
+   */
   LogFormatter::ptr getFormatter();
+
+  /**
+    * @brief 将日志器的配置转成YAML String
+    */
   std::string toYamlString();
 
  private:
@@ -380,7 +483,10 @@ class Logger : public std::enable_shared_from_this<Logger> {
   LogFormatter::ptr m_formatter;            //日志格式器
   Logger::ptr m_root;                       //根日志对象
 };
-//输出控制台的Appender
+
+/**
+ * @brief 输出到控制台的Appender
+ */
 class StdoutLogAppender : public LogAppender {
  public:
   typedef std::shared_ptr<StdoutLogAppender> ptr;
@@ -391,7 +497,9 @@ class StdoutLogAppender : public LogAppender {
  private:
 };
 
-//输出文件的Appender
+/**
+ * @brief 输出到文件的Appender
+ */
 class FileLogAppender : public LogAppender {
  public:
   typedef std::shared_ptr<FileLogAppender> ptr;
@@ -407,22 +515,49 @@ class FileLogAppender : public LogAppender {
   std::ofstream m_filestream;
   uint64_t m_lastTime = 0;
 };
-
+/**
+ * @brief 日志器管理类
+ */
 class LoggerManager {
  public:
   typedef SpinLock MutexType;
+
+  /**
+    * @brief 构造函数
+    */
   LoggerManager();
+
+  /**
+    * @brief 获取日志器
+    * @param[in] name 日志器名称
+    */
   Logger::ptr getLogger(const std::string& name);
+
+  /**
+    * @brief 初始化
+    */
   void init();
+
+  /**
+    * @brief 返回主日志器
+    */
   Logger::ptr getRoot() const { return m_root; }
+
+  /**
+    * @brief 将所有的日志器配置转成YAML String
+    */
   std::string toYamlString();
 
  private:
+  /// Mutex
   MutexType m_mutex;
+  /// 日志器容器
   std::map<std::string, Logger::ptr> m_loggers;
+  /// 主日志器
   Logger::ptr m_root;
 };
 
+/// 日志器管理类单例模式
 typedef sylar::Singleton<LoggerManager> LoggerMgr;
 
 }  // namespace sylar
