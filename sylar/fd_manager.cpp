@@ -17,7 +17,9 @@ FdCtx::FdCtx(int fd)
       m_sendTimeout(-1) {
   init();
 }
-FdCtx::~FdCtx() {}
+FdCtx::~FdCtx() {
+}
+
 bool FdCtx::init() {
   if (m_isInit) {
     return true;

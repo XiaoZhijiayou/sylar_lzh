@@ -7,20 +7,16 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include "noncopyable.h"
 
 namespace sylar {
-class Semaphore {
+class Semaphore : Noncopyable{
  public:
   Semaphore(uint32_t count = 0);
   ~Semaphore();
   void wait();
   void notify();
 
- private:
-  Semaphore(const Semaphore&) = delete;
-  Semaphore(const Semaphore&&) = delete;
-  Semaphore& operator=(const Semaphore&) = delete;
-  Semaphore& operator=(const Semaphore&&) = delete;
 
  private:
   sem_t m_semaphore;
@@ -119,7 +115,7 @@ class WriteSocpedLockImpl {
 /**
  *  @brief 线程安全的互斥锁
  * */
-class Mutex {
+class Mutex : Noncopyable {
  public:
   typedef sylar::SocpedLockImpl<Mutex> Lock;
   Mutex() { pthread_mutex_init(&m_mutex, nullptr); }
@@ -134,7 +130,7 @@ class Mutex {
   pthread_mutex_t m_mutex;
 };
 
-class NullMutex {
+class NullMutex : Noncopyable {
  public:
   typedef sylar::SocpedLockImpl<NullMutex> Lock;
 
@@ -150,7 +146,7 @@ class NullMutex {
 /**
  *  @brief 线程安全的读写锁
  * */
-class RWMutex {
+class RWMutex : Noncopyable {
  public:
   //局部读锁
   typedef ReadSocpedLockImpl<RWMutex> ReadLock;
@@ -190,7 +186,7 @@ class RWMutex {
 /**
  * @brief 空的读写锁
  * */
-class NullRWMutex {
+class NullRWMutex : Noncopyable {
  public:
   //局部读锁
   typedef ReadSocpedLockImpl<NullRWMutex> ReadLock;
@@ -209,7 +205,7 @@ class NullRWMutex {
   void unlock() {}
 };
 
-class SpinLock {
+class SpinLock : Noncopyable {
  public:
   typedef SocpedLockImpl<SpinLock> Lock;
   SpinLock() { pthread_spin_init(&m_mutex, 0); }
@@ -223,7 +219,7 @@ class SpinLock {
   pthread_spinlock_t m_mutex;
 };
 
-class CASLock {
+class CASLock : Noncopyable {
  public:
   typedef SocpedLockImpl<CASLock> Lock;
 
