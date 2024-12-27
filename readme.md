@@ -49,6 +49,8 @@
 -- Socket IO Hook06
 
 -- 网络模块socket01
+-- 网络模块socket02
+-- 网络模块socket03
 
 
 ```
@@ -262,8 +264,18 @@ Timer -> addTimer() --> cancel()
 ## HOOK
     sleep
     usleep
+    socket 相关的(socket,connect,accept)
+    IO相关的(read,write,send,recv,....)
+    fd相关的(fcntl,ioctl,....)
+
 ## socket函数库
 
+        [UnixAddress]
+             |                           |-[IPv4Address]
+        |Address| ---- [IPAddress] ----  |
+             |                           |-[IPv6Address]
+             | 
+         |Socket|
 
 ## http协议开发
 
