@@ -1,19 +1,14 @@
 #include "address.h"
 #include "log.h"
 #include <sstream>
-#include <string.h>
-#include "endian.h"
 #include <ifaddrs.h>
 #include <stddef.h>
-#include <ifaddrs.h>
-#include <vector>
-#include <sys/types.h>
-#include "netdb.h"
-#include <arpa/inet.h>
+#include <netdb.h>
+#include "endian.h"
 
 namespace sylar{
 
-static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static sylar::Logger::ptr g_logger = SYLAR_LOG_NEAME("system");
 
 /**
  * @brief 1 << (sizeof(T) * 8 - bits) 将一个 1 移动到左边(sizeof(T) * 8 - bits)未知
@@ -23,6 +18,19 @@ static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 template<class T>
 static T CreateMask(uint32_t bits){
   return ( 1 << (sizeof(T) * 8 - bits)) - 1;
+}
+
+/**
+ * @brief 计算给定的value中的二进制中1的位的个数。
+ * uint32_t 表示一个占有四字节的数，其中一个字节是八位
+ * */
+template<class T>
+static uint32_t CountBytes(T value){
+  uint32_t result = 0;
+  for(; value; ++result){
+    value &= value - 1;
+  }
+  return result;
 }
 
 Address::ptr Address::LookupAny( const std::string& host,
@@ -75,7 +83,8 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
   }
   /// 检查 node service
   if(node.empty()){
-    service = (const char*) memchr(service + 1, ':', host.size());
+    service = (const char*) memchr(host.c_str(), ':', host.size());
+    SYLAR_LOG_DEBUG(g_logger) << service << "  ";
     if(service){
       if(!memchr(service + 1, ':',host.c_str() + host.size() - service - 1)){
         node = host.substr(0,service - host.c_str());
@@ -85,7 +94,9 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
   }
 
   if(node.empty()){
+    SYLAR_LOG_DEBUG(g_logger) <<  "node.empty  ";
     node = host;
+    SYLAR_LOG_DEBUG(g_logger) << node;
   }
 
   ///一个在网络编程中广泛使用的函数，用于将主机名（如 www.example.com）和服务名（如 http 或端口号 80）
@@ -93,7 +104,10 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
 
   /// 其中hint是用来知道如何解析的
   /// results用来指向一个指针，该指针将指向由 getaddrinfo 分配的地址信息链表的头部
+
+  /// 就是这里面出现了问题!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   int error = getaddrinfo(node.c_str(),service,&hints,&results);
+  SYLAR_LOG_DEBUG(g_logger) << error;
   if(error){
     SYLAR_LOG_ERROR(g_logger) << "Address::Lookup getaddress(" << host << ","
                             << family << ", " << type << ") err=" << error <<"errstr="
@@ -101,8 +115,10 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
     return false;
   }
   next = results;
+
   while (next){
     result.push_back(Create(next->ai_addr,(socklen_t)next->ai_addrlen));
+    SYLAR_LOG_DEBUG(g_logger) << ((sockaddr_in*)next->ai_addr)->sin_addr.s_addr;
     next = next->ai_next;
   }
   freeaddrinfo(results);
@@ -165,10 +181,10 @@ bool Address::GetInterfaceAddresses(std::vector<std::pair<Address::ptr,uint32_t>
   /// *代表任意网卡
   if(iface.empty() || iface == "*") {
     if (family == AF_INET || family == AF_UNSPEC) {
-      result.push_back(std::make_pair(Address::ptr(new IPv4Address()), 0u)));
+      result.push_back(std::make_pair(Address::ptr(new IPv4Address()), 0u));
     }
     if (family == AF_INET6 || family == AF_UNSPEC) {
-      result.push_back(std::make_pair(Address::ptr(new IPv6Address()), 0u)));
+      result.push_back(std::make_pair(Address::ptr(new IPv6Address()), 0u));
     }
     return true;
   }
@@ -179,6 +195,7 @@ bool Address::GetInterfaceAddresses(std::vector<std::pair<Address::ptr,uint32_t>
     return false;
   }
 
+  /// 这个是相当于找了一个区间这个区间内都是相同的
   auto its = results.equal_range(iface);
   for(; its.first != its.second; ++its.first){
     result.push_back(its.first->second);
@@ -190,7 +207,7 @@ int Address::getFamily() const{
     return getAddr()->sa_family;
 }
 
-std::string Address::toString(){
+std::string Address::toString() const{
   std::stringstream ss;
   insert(ss);
   return ss.str();
@@ -209,7 +226,7 @@ Address::ptr Address::Create(const sockaddr* addr, socklen_t addrlen){
       result.reset(new IPv6Address(*(const sockaddr_in6*)addr));
       break;
     default:
-      result.reset(new UnknowAddress(*(const sockaddr*)addr));
+      result.reset(new UnknowAddress(*addr));
       break;
   }
   return result;
@@ -237,7 +254,7 @@ bool Address::operator!=(const Address& rhs) const{
   return !(*this == rhs);
 }
 
-IPAddress::ptr IPAddress::Create(const char* address, uint32_t port){
+IPAddress::ptr IPAddress::Create(const char* address, uint16_t port){
   addrinfo hints, *results;
   memset(&hints, 0, sizeof(addrinfo));
   hints.ai_flags = AI_NUMERICHOST;
@@ -265,7 +282,7 @@ IPAddress::ptr IPAddress::Create(const char* address, uint32_t port){
 }
 
 
-IPv4Address::ptr IPv4Address::Create(const char* address, uint32_t port){
+IPv4Address::ptr IPv4Address::Create(const char* address, uint16_t port){
   IPv4Address::ptr rt(new IPv4Address);
   rt->m_addr.sin_port = byteswapOnLittleEndian(port);
   int result = inet_pton(AF_INET,address,&rt->m_addr.sin_addr);
@@ -282,7 +299,7 @@ IPv4Address::IPv4Address(const sockaddr_in& address){
   m_addr = address;
 }
 
-IPv4Address::IPv4Address(uint32_t address,uint32_t port){
+IPv4Address::IPv4Address(uint32_t address,uint16_t port){
   memset(&m_addr,0,sizeof(m_addr));
   m_addr.sin_family = AF_INET;  /*AF_INET表示ipv4*/
   m_addr.sin_port  = byteswapOnLittleEndian(port);

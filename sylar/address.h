@@ -40,7 +40,7 @@ class Address{
    * @return 返回是否转换成功
    * */
   static bool Lookup(std::vector<Address::ptr>& result, const std::string& host,
-                     int family = AF_UNSPEC, int type = 0, int protocol = 0);
+                     int family = AF_INET, int type = 0, int protocol = 0);
 
   /**
    * @brief 通过host地址返回对应条件的任意Address
@@ -109,7 +109,7 @@ class Address{
   /**
    * @brief 返回可读性字符串
    * */
-  std::string toString();
+  std::string toString() const;
 
   bool operator<(const Address& rhs) const;
   bool operator==(const Address& rhs) const;
@@ -121,7 +121,7 @@ class IPAddress : public Address{
  public:
   typedef std::shared_ptr<IPAddress> ptr;
 
-  static IPAddress::ptr Create(const char* address, uint32_t port = 0);
+  static IPAddress::ptr Create(const char* address, uint16_t port = 0);
 
   /**
    * @brief 获取该地址的广播地址
@@ -162,14 +162,14 @@ class IPv4Address : public IPAddress{
  public:
   typedef std::shared_ptr<IPv4Address> ptr;
 
-  static IPv4Address::ptr Create(const char* address, uint32_t port =0);
+  static IPv4Address::ptr Create(const char* address, uint16_t port =0);
 
   /**
    * @brief 通过二进制地址构造IPv4Address
    * @param[in] address 二进制地址address
    * @param[in] port 端口号
    * */
-  IPv4Address(uint32_t address = INADDR_ANY,uint32_t port = 0);
+  IPv4Address(uint32_t address = INADDR_ANY,uint16_t port = 0);
 
   IPv4Address(const sockaddr_in& address);
 

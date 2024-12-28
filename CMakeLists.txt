@@ -84,6 +84,11 @@ add_dependencies(test_hook sylar)
 force_redefine_file_macro_for_sources(test_hook) #___FILE___
 target_link_libraries(test_hook  ${LIBS})
 
+add_executable(test_address tests/test_address.cpp)
+add_dependencies(test_address sylar)
+force_redefine_file_macro_for_sources(test_address) #___FILE___
+target_link_libraries(test_address ${LIBS})
+
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
