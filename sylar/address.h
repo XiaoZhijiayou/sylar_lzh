@@ -50,7 +50,7 @@ class Address{
    * @return 返回满足条件的任意的Address，失败返回nullptr
    * */
   static Address::ptr LookupAny( const std::string& host,
-                     int family = AF_UNSPEC, int type = 0, int protocol = 0);
+                     int family = AF_INET, int type = 0, int protocol = 0);
 
   /**
    * @brief 通过host地址返回对应条件的任意Address
@@ -60,7 +60,7 @@ class Address{
    * @return 返回满足条件的任意IPAddress，失败返回nullptr
    * */
   static std::shared_ptr<IPAddress> LookupAnyIPAddress(const std::string& host,
-                     int family = AF_UNSPEC, int type = 0, int protocol = 0);
+                     int family = AF_INET, int type = 0, int protocol = 0);
 
   /**
    * @brief 返回本机所有网卡的<网卡名，地址，子网掩码位数>

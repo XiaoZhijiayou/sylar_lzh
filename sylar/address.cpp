@@ -56,71 +56,63 @@ IPAddress::ptr Address::LookupAnyIPAddress(const std::string& host,
   return nullptr;
 }
 
-bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
-                   int family , int type , int protocol){
+bool Address::Lookup(std::vector<Address::ptr> &result, const std::string &host,
+                     int family, int type, int protocol) {
   addrinfo hints, *results, *next;
-  hints.ai_flags = 0;
-  hints.ai_family = family;
-  hints.ai_socktype = type;
-  hints.ai_protocol = protocol;
-  hints.ai_addrlen = 0;
+  hints.ai_flags     = 0;
+  hints.ai_family    = family;
+  hints.ai_socktype  = type;
+  hints.ai_protocol  = protocol;
+  hints.ai_addrlen   = 0;
   hints.ai_canonname = NULL;
-  hints.ai_addr = NULL;
-  hints.ai_next = NULL;
+  hints.ai_addr      = NULL;
+  hints.ai_next      = NULL;
 
   std::string node;
-  const char* service = NULL;
-  /// 其中IPv6的地址是这样的:[::1]:8080
-  /// 检查IPv6的地址 service
-  if(!host.empty() && host[0] == '['){
-    const char* endipv6 = (const char*)memchr(host.c_str() + 1, ']',host.size() - 1);
-    if(endipv6){
-      if(*(endipv6 + 1) == ':'){
+  const char *service = NULL;
+
+  //检查 ipv6address serivce
+  if (!host.empty() && host[0] == '[') {
+    const char *endipv6 = (const char *)memchr(host.c_str() + 1, ']', host.size() - 1);
+    if (endipv6) {
+      //TODO check out of range
+      if (*(endipv6 + 1) == ':') {
         service = endipv6 + 2;
       }
-      node = host.substr(1,endipv6 - host.c_str() - 1);
+      node = host.substr(1, endipv6 - host.c_str() - 1);
     }
   }
-  /// 检查 node service
-  if(node.empty()){
-    service = (const char*) memchr(host.c_str(), ':', host.size());
-    SYLAR_LOG_DEBUG(g_logger) << service << "  ";
-    if(service){
-      if(!memchr(service + 1, ':',host.c_str() + host.size() - service - 1)){
-        node = host.substr(0,service - host.c_str());
+
+  //检查 node serivce
+  if (node.empty()) {
+    service = (const char *)memchr(host.c_str(), ':', host.size());
+    if (service) {
+      if (!memchr(service + 1, ':', host.c_str() + host.size() - service - 1)) {
+        node = host.substr(0, service - host.c_str());
         ++service;
       }
     }
   }
 
-  if(node.empty()){
-    SYLAR_LOG_DEBUG(g_logger) <<  "node.empty  ";
+  if (node.empty()) {
     node = host;
-    SYLAR_LOG_DEBUG(g_logger) << node;
   }
-
-  ///一个在网络编程中广泛使用的函数，用于将主机名（如 www.example.com）和服务名（如 http 或端口号 80）
-  /// 解析为可用于网络通信的地址结构
-
-  /// 其中hint是用来知道如何解析的
-  /// results用来指向一个指针，该指针将指向由 getaddrinfo 分配的地址信息链表的头部
-
-  /// 就是这里面出现了问题!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  int error = getaddrinfo(node.c_str(),service,&hints,&results);
-  SYLAR_LOG_DEBUG(g_logger) << error;
-  if(error){
-    SYLAR_LOG_ERROR(g_logger) << "Address::Lookup getaddress(" << host << ","
-                            << family << ", " << type << ") err=" << error <<"errstr="
-                            << strerror(error);
+  int error = getaddrinfo(node.c_str(), service, &hints, &results);
+  if (error) {
+    SYLAR_LOG_DEBUG(g_logger) << "Address::Lookup getaddress(" << host << ", "
+                              << family << ", " << type << ") err=" << error << " errstr="
+                              << gai_strerror(error);
     return false;
   }
-  next = results;
 
-  while (next){
-    result.push_back(Create(next->ai_addr,(socklen_t)next->ai_addrlen));
+  next = results;
+  while (next) {
+    result.push_back(Create(next->ai_addr, (socklen_t)next->ai_addrlen));
+    /// 一个ip/端口可以对应多种接字类型，比如SOCK_STREAM, SOCK_DGRAM, SOCK_RAW，所以这里会返回重复的结果
     SYLAR_LOG_DEBUG(g_logger) << ((sockaddr_in*)next->ai_addr)->sin_addr.s_addr;
     next = next->ai_next;
   }
+
   freeaddrinfo(results);
   return !result.empty();
 }
