@@ -1,8 +1,8 @@
 #ifndef __SYLAR_SOCKET_H__
 #define __SYLAR_SOCKET_H__
 
-#include <memory>
 #include "address.h"
+#include <memory>
 #include "noncopyable.h"
 #include "hook.h"
 
@@ -15,6 +15,49 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
  public:
   typedef std::shared_ptr<Socket> ptr;
   typedef std::weak_ptr<Socket> weak_ptr;
+
+  /**
+   * @brief socket 类型
+   * */
+  enum Type{
+    /// TCP 类型
+    TCP = SOCK_STREAM,
+    /// UDP 类型
+    UDP = SOCK_DGRAM
+  };
+
+  /**
+   * @brief socket协议族
+   * */
+   enum Family{
+    /// IPv4 socket
+    IPv4 = AF_INET,
+    /// IPv6 socket
+    IPv6 = AF_INET6,
+    /// Unix socket
+    UNIX = AF_UNIX,
+  };
+
+  /**
+   * @brief 创建TCP Socket
+   * @param [in] address 地址
+   * */
+  static Socket::ptr CreateTCP(sylar::Address::ptr address);
+
+  /**
+   * @brief 创建UDP Socket满足地址类型
+   * @param [in] address 地址
+   * */
+  static Socket::ptr CreateUDP(sylar::Address::ptr address);
+
+  static Socket::ptr CreateTCPSocket();
+  static Socket::ptr CreateUDPSocket();
+
+  static Socket::ptr CreateTCPSocket6();
+  static Socket::ptr CreateUDPSocket6();
+
+  static Socket::ptr CreateUnixTCPSocket();
+  static Socket::ptr CreateUnixUDPSocket();
 
   /**
    * @brief Socket构造函数
@@ -243,7 +286,7 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
   int getError();
 
   /**
-   * @brief 输出信息到流中
+   * @brief 输出socket信息到流中
    * */
   virtual std::ostream& dump(std::ostream& os) const;
   virtual std::string toString() const;

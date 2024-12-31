@@ -94,9 +94,14 @@ class Address {
   int getFamily() const;
 
   /**
-   * @brief 返回sockaddr指针，读写
+   * @brief 返回sockaddr指针，只读
    * */
   virtual const sockaddr* getAddr() const = 0;
+
+  /**
+   * @brief 返回sockaddr指针，读写
+   * */
+   virtual sockaddr* getAddr() = 0;
 
   /**
    * @brief 返回sockaddr的长度
@@ -175,6 +180,7 @@ class IPv4Address : public IPAddress {
   IPv4Address(const sockaddr_in& address);
 
   const sockaddr* getAddr() const override;
+  sockaddr* getAddr() override;
   socklen_t getAddrLen() const override;
   std::ostream& insert(std::ostream& os) const override;
 
@@ -203,6 +209,7 @@ class IPv6Address : public IPAddress {
   IPv6Address(const sockaddr_in6& address);
 
   const sockaddr* getAddr() const override;
+  sockaddr* getAddr() override;
   socklen_t getAddrLen() const override;
   std::ostream& insert(std::ostream& os) const override;
 
@@ -222,12 +229,14 @@ class IPv6Address : public IPAddress {
  * */
 class UnixAddress : public Address {
  public:
-  std::shared_ptr<UnixAddress> ptr;
+  typedef std::shared_ptr<UnixAddress> ptr;
   UnixAddress();
   UnixAddress(const std::string& path);
 
   const sockaddr* getAddr() const override;
+  sockaddr* getAddr() override;
   socklen_t getAddrLen() const override;
+  void setAddrlen(uint32_t v);
   std::ostream& insert(std::ostream& os) const override;
 
  private:
@@ -246,6 +255,7 @@ class UnknowAddress : public Address {
   UnknowAddress(const sockaddr& addr);
 
   const sockaddr* getAddr() const override;
+  sockaddr* getAddr() override;
   socklen_t getAddrLen() const override;
   std::ostream& insert(std::ostream& os) const override;
 

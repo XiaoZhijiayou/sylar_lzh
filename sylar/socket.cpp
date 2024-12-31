@@ -12,6 +12,46 @@
 namespace sylar{
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NEAME("system");
 
+Socket::ptr Socket::CreateTCP(sylar::Address::ptr address){
+  Socket::ptr sock(new Socket(address->getFamily(),TCP,0));
+  return sock;
+}
+
+Socket::ptr Socket::CreateUDP(sylar::Address::ptr address){
+  Socket::ptr sock(new Socket(address->getFamily(),UDP,0));
+  return sock;
+}
+
+Socket::ptr Socket::CreateTCPSocket(){
+  Socket::ptr sock(new Socket(IPv4,TCP,0));
+  return sock;
+}
+
+Socket::ptr Socket::CreateUDPSocket(){
+  Socket::ptr sock(new Socket(IPv4,UDP,0));
+  return sock;
+}
+
+Socket::ptr Socket::CreateTCPSocket6(){
+  Socket::ptr sock(new Socket(IPv6,TCP,0));
+  return sock;
+}
+
+Socket::ptr Socket::CreateUDPSocket6(){
+  Socket::ptr sock(new Socket(IPv6,UDP,0));
+  return sock;
+}
+
+Socket::ptr Socket::CreateUnixTCPSocket(){
+  Socket::ptr sock(new Socket(UNIX,TCP,0));
+  return sock;
+}
+
+Socket::ptr Socket::CreateUnixUDPSocket(){
+  Socket::ptr sock(new Socket(UNIX,UDP,0));
+  return sock;
+}
+
 Socket::Socket(int family, int type, int protocol)
     :m_sock(-1)
     ,m_family(family)
@@ -156,7 +196,12 @@ bool Socket::connect(const Address::ptr addr, uint64_t timeout_ms){
 }
 
 bool Socket::reconnect(uint64_t timeout_ms){
-
+  if(!m_remoteAddress){
+    SYLAR_LOG_ERROR(g_logger) << "reconnect m_remoteAddress is null";
+    return false;
+  }
+  m_localAddress.reset();
+  return connect(m_remoteAddress,timeout_ms);
 }
 
 bool Socket::listen(int backlog){
@@ -336,31 +381,50 @@ bool Socket::isValid() const{
 }
 
 int Socket::getError(){
-  int
+  int error = 0;
+  socklen_t len = sizeof(error);
+  if(!getOption(SOL_SOCKET,SO_ERROR, &error,&len)){
+    error = errno;
+  }
+  return error;
 }
 
 std::ostream& Socket::dump(std::ostream& os) const{
-
+  os << "[Socket sock =" << m_sock
+     << "is_connected=" << m_isConnect
+     << " family=" << m_family
+     << " type=" << m_type
+     << " protocol=" << m_protocol;
+  if(m_localAddress){
+    os << " local_address =" << m_localAddress->toString();
+  }
+  if(m_remoteAddress){
+    os << " remote_address =" << m_remoteAddress->toString();
+  }
+  os << "]";
+  return os;
 }
 
 std::string Socket::toString() const{
-
+  std::stringstream ss;
+  dump(ss);
+  return ss.str();
 }
 
 bool Socket::cancelRead(){
-
+  return IOManager::GetThis()->cancelEvent(m_sock,sylar::IOManager::READ);
 }
 
 bool Socket::cancelWrite(){
-
+  return IOManager::GetThis()->cancelEvent(m_sock,sylar::IOManager::WRITE);
 }
 
 bool Socket::cancelAccept(){
-
+  return IOManager::GetThis()->cancelEvent(m_sock,sylar::IOManager::READ);
 }
 
 bool Socket::cancelAll(){
-
+  return IOManager::GetThis()->cancelAll(m_sock);
 }
 
 void Socket::initSock(){

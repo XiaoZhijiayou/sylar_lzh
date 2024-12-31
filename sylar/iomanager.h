@@ -96,7 +96,7 @@ class IOManager : public Scheduler, public TimerManager {
    * @brief 取消所有事件
    * @param[in] fd socket句柄
    * */
-  bool cacelAll(int fd);
+  bool cancelAll(int fd);
 
   /**
    * @brief 返回当前的IOManager

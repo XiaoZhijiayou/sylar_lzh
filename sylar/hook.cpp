@@ -358,7 +358,7 @@ int close(int fd) {
   if (ctx) {
     auto iom = sylar::IOManager::GetThis();
     if (iom) {
-      iom->cacelAll(fd);
+      iom->cancelAll(fd);
     }
     sylar::FdMgr::GetInstance()->del(fd);
   }
