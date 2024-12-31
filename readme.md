@@ -54,11 +54,13 @@
 -- 网络模块socket04
 -- 网络模块socket05
 
+-- 网络模块socket06：sock封装
+-- 网络模块socket07
+
 ```
 
-
-
 ## 开发环境
+
 ```
 manjaro 6.10.13
 gcc 14.2.1
@@ -124,13 +126,15 @@ LexicalCast
 //map/unordered_map 支持key = std::string
 //Config::Lookup(key),key相同，类型不同的，不会报错
 ```
+
 自定义类型，需要实现sylar::LexicalCast,偏特化
 实现后，就可以支持Config解析自定义类型，自定义类型可以和常规stl容器一起使用。
 
-
 配置的事件机制
 --- 当一个配置项发生修改的时候，可以反向通知对应的代码，回调
+
 # 日志系统整合配置系统
+
 ```
 logs:
     - name:root
@@ -152,6 +156,7 @@ logs:
 static Logger::ptr g_log = SYLAR_LOG_NAME("system");
 //m_root,m_system-m_root 当logger的appenders为空，使用root写logger
 ```
+
 ```cpp
 //定义LogDefine LogAppenderDefine,偏特化 LexicalCast
 //实现日志配置解析
@@ -160,6 +165,7 @@ static Logger::ptr g_log = SYLAR_LOG_NAME("system");
 ```cpp
 
 ```
+
 遗留问题：
 1.appender定于的formatter读取yaml的时候，没有被初始化掉
 2.去掉额外的调试日志
@@ -167,6 +173,7 @@ static Logger::ptr g_log = SYLAR_LOG_NAME("system");
 #### 日志和配置小结部分
 
 ## 线程库
+
 ```
 Thread,Mutex(锁机制)
 
@@ -182,11 +189,11 @@ Spinlock,替换Mutex，
 
 ```
 
-
 ## 协程库封装 基于linux下的ucontext的
+
 定义协程接口
 ucontext_t。
-marco 
+marco
 
 ```
 Fiber::GetThis()
@@ -196,7 +203,9 @@ Thread->main_fiber <------> sub_fiber
             v
         sub_fiber
 ```
+
 - 协程调度模块scheduel
+
 ```
         1 ----  N   1 ----- M
 scheduler ---> thread ----> fiber
@@ -250,6 +259,7 @@ Timer -> addTimer() --> cancel()
 获取当前的定时器触发距离现在的时间差
 返回当前需要触发的定时器
 ```
+
 ```
          [Fiber]
             ^ N                   [Timer]
@@ -262,7 +272,9 @@ Timer -> addTimer() --> cancel()
             | 1                     |
         [Scheduler] <------ [IOManager(epoll)]
 ```
+
 ## HOOK
+
     sleep
     usleep
     socket 相关的(socket,connect,accept)
@@ -277,6 +289,10 @@ Timer -> addTimer() --> cancel()
              |                           |-[IPv6Address]
              | 
          |Socket|
+
+connect,
+accept
+read/write/close
 
 ## http协议开发
 

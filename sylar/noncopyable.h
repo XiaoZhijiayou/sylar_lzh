@@ -1,9 +1,9 @@
 #ifndef __SYLAR_NONCOPYABLE_H__
 #define __SYLAR_NONCOPYABLE_H__
 
-namespace sylar{
+namespace sylar {
 
-class Noncopyable{
+class Noncopyable {
  public:
   Noncopyable() = default;
 
@@ -14,6 +14,6 @@ class Noncopyable{
   Noncopyable& operator=(const Noncopyable&) = delete;
 };
 
-}
+}  // namespace sylar
 
 #endif

@@ -1,3 +1,8 @@
+
+/**
+ * @brief 常用宏的封装
+ * */
+
 #ifndef __SYLAR_MACRO_H__
 #define __SYLAR_MACRO_H__
 

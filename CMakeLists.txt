@@ -25,14 +25,13 @@ set(LIB_SRC
         sylar/hook.cpp
         sylar/fd_manager.cpp
         sylar/address.cpp
+        sylar/socket.cpp
 )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
 force_redefine_file_macro_for_sources(sylar) #___FILE___
 # add_library(mysylar STATIC ${LIB_SRC}) # for static library
 # SET_TARGET_PROPERTIES(sylar_static PROPERTIES OUTPUT_NAME "sylar") # for static library
-
-
 
 
 set(LIBS
@@ -51,38 +50,38 @@ target_link_libraries(test ${LIBS})
 add_executable(test_config tests/test_config.cpp)
 add_dependencies(test_config sylar)
 force_redefine_file_macro_for_sources(test_config) #___FILE___
-target_link_libraries(test_config  ${LIBS})
+target_link_libraries(test_config ${LIBS})
 
 add_executable(test_thread tests/test_thread.cpp)
 add_dependencies(test_thread sylar)
 force_redefine_file_macro_for_sources(test_thread) #___FILE___
-target_link_libraries(test_thread  ${LIBS})
+target_link_libraries(test_thread ${LIBS})
 
 add_executable(test_util tests/test_util.cpp)
 add_dependencies(test_util sylar)
 force_redefine_file_macro_for_sources(test_util) #___FILE___
-target_link_libraries(test_util  ${LIBS})
+target_link_libraries(test_util ${LIBS})
 
 add_executable(test_fiber tests/test_fiber.cpp)
 add_dependencies(test_fiber sylar)
 force_redefine_file_macro_for_sources(test_fiber) #___FILE___
-target_link_libraries(test_fiber  ${LIBS})
+target_link_libraries(test_fiber ${LIBS})
 
 add_executable(test_scheduler tests/test_scheduler.cpp)
 add_dependencies(test_scheduler sylar)
 force_redefine_file_macro_for_sources(test_scheduler) #___FILE___
-target_link_libraries(test_scheduler  ${LIBS})
+target_link_libraries(test_scheduler ${LIBS})
 
 
 add_executable(test_iomanager tests/test_iomanager.cpp)
 add_dependencies(test_iomanager sylar)
 force_redefine_file_macro_for_sources(test_iomanager) #___FILE___
-target_link_libraries(test_iomanager  ${LIBS})
+target_link_libraries(test_iomanager ${LIBS})
 
 add_executable(test_hook tests/test_hook.cpp)
 add_dependencies(test_hook sylar)
 force_redefine_file_macro_for_sources(test_hook) #___FILE___
-target_link_libraries(test_hook  ${LIBS})
+target_link_libraries(test_hook ${LIBS})
 
 add_executable(test_address tests/test_address.cpp)
 add_dependencies(test_address sylar)

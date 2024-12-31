@@ -8,6 +8,7 @@
 #include <sys/uio.h>
 #include <time.h>
 #include <unistd.h>
+#include <cstdint>
 
 namespace sylar {
 bool is_hook_enable();
@@ -94,5 +95,8 @@ extern getsockopt_fun getsockopt_f;
 typedef int (*setsockopt_fun)(int socket, int level, int option_name,
                               const void* option_value, socklen_t option_len);
 extern setsockopt_fun setsockopt_f;
+
+extern int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen,
+                                uint64_t timeout_ms);
 }
 #endif

@@ -1,9 +1,8 @@
+#include <iostream>
 #include <vector>
 #include "../sylar/config.h"
 #include "../sylar/log.h"
 #include "yaml-cpp/yaml.h"
-#include <iostream>
-
 
 sylar::ConfigVar<int>::ptr g_int_value_config =
     sylar::Config::Lookup("system.port", (int)8080, "system port");
@@ -121,32 +120,27 @@ void test_config() {
   XX_M(g_int_umap_value_config, str_int_umap, after);
 }
 
-
 /**
  * 自定义类型的支持
  * */
-class Person{
+class Person {
  public:
   Person() {}
   std::string m_name;
   int m_age = 0;
   bool m_sex = 0;
-  std::string toString() const{
+  std::string toString() const {
     std::stringstream ss;
-    ss  << "[Person name= " << m_name
-        << " age="  << m_age
-        << " sex="  << m_sex
-        << "]";
+    ss << "[Person name= " << m_name << " age=" << m_age << " sex=" << m_sex
+       << "]";
     return ss.str();
   }
-  bool operator==(const Person& oth) const{
-    return    m_name == oth.m_name
-           && m_age == oth.m_age
-           && m_sex == oth.m_sex;
+  bool operator==(const Person& oth) const {
+    return m_name == oth.m_name && m_age == oth.m_age && m_sex == oth.m_sex;
   }
 };
 
-namespace sylar{
+namespace sylar {
 template <>
 class LexicalCast<std::string, Person> {
  public:
@@ -166,77 +160,88 @@ class LexicalCast<Person, std::string> {
   std::string operator()(const Person& p) {
     YAML::Node node;
     node["name"] = p.m_name;
-    node["age"]  = p.m_age;
-    node["sex"]  = p.m_sex;
+    node["age"] = p.m_age;
+    node["sex"] = p.m_sex;
     std::stringstream ss;
     ss << node;
     return ss.str();
   }
 };
 
-}
+}  // namespace sylar
 
 sylar::ConfigVar<Person>::ptr g_person =
-      sylar::Config::Lookup("class.person", Person(), "system person");
+    sylar::Config::Lookup("class.person", Person(), "system person");
 
-sylar::ConfigVar<std::map<std::string,Person>>::ptr g_person_map =
-    sylar::Config::Lookup("class.map", std::map<std::string,Person>(), "system person");
+sylar::ConfigVar<std::map<std::string, Person>>::ptr g_person_map =
+    sylar::Config::Lookup("class.map", std::map<std::string, Person>(),
+                          "system person");
 
-sylar::ConfigVar<std::map<std::string,std::vector<Person>>>::ptr g_person_vec_map =
-    sylar::Config::Lookup("class.vec_map", std::map<std::string,std::vector<Person>>(), "system person");
+sylar::ConfigVar<std::map<std::string, std::vector<Person>>>::ptr
+    g_person_vec_map = sylar::Config::Lookup(
+        "class.vec_map", std::map<std::string, std::vector<Person>>(),
+        "system person");
 
 void test_class() {
-  SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "before: " << g_person->getValue().toString() << "-" << g_person->toString();
-#define  XX_PM(g_var, prefix){\
-    auto m = g_person_map->getValue(); \
-    for (auto& i : m) {\
-      SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "prefix: " << i.first << " - " << i.second.toString();\
-      }\
-      SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "prefix: " << ": size=" << m.size();\
-    }
+  SYLAR_LOG_INFO(SYLAR_LOG_ROOT())
+      << "before: " << g_person->getValue().toString() << "-"
+      << g_person->toString();
+#define XX_PM(g_var, prefix)                                                 \
+  {                                                                          \
+    auto m = g_person_map->getValue();                                       \
+    for (auto& i : m) {                                                      \
+      SYLAR_LOG_INFO(SYLAR_LOG_ROOT())                                       \
+          << "prefix: " << i.first << " - " << i.second.toString();          \
+    }                                                                        \
+    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "prefix: " << ": size=" << m.size(); \
+  }
 
-  g_person->addListener([](const Person& old_value, const Person& new_value){
+  g_person->addListener([](const Person& old_value, const Person& new_value) {
     SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "old_value=" << old_value.toString()
                                      << "new_value=" << new_value.toString();
   });
 
-  XX_PM(g_person_map,"class.map before");
-  SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "before: " << g_person_vec_map->toString();
+  XX_PM(g_person_map, "class.map before");
+  SYLAR_LOG_INFO(SYLAR_LOG_ROOT())
+      << "before: " << g_person_vec_map->toString();
 
-  YAML::Node root = YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/test.yml");
+  YAML::Node root =
+      YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/test.yml");
   sylar::Config::LoadFromYaml(root);
-  SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after: " << g_person->getValue().toString() << "-" << g_person->toString();
+  SYLAR_LOG_INFO(SYLAR_LOG_ROOT())
+      << "after: " << g_person->getValue().toString() << "-"
+      << g_person->toString();
 
-  XX_PM(g_person_map,"class.map after");
+  XX_PM(g_person_map, "class.map after");
   SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after: " << g_person_vec_map->toString();
 }
 
-void test_log(){
+void test_log() {
   static sylar::Logger::ptr system_log = SYLAR_LOG_NEAME("system");
   SYLAR_LOG_INFO(system_log) << "hello system" << std::endl;
-  std::cout<<sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+  std::cout << sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
   YAML::Node root =
       YAML::LoadFile("/home/li/project/wbeserver_all/sylar/bin/conf/log.yml");
   sylar::Config::LoadFromYaml(root);
   std::cout << "===========================================" << std::endl;
-  std::cout<<sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+  std::cout << sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
   std::cout << "===========================================" << std::endl;
-  std::cout << root <<std::endl;
+  std::cout << root << std::endl;
   SYLAR_LOG_INFO(system_log) << "hello system" << std::endl;
 
   system_log->setFormatter("%d - %m%n");
   SYLAR_LOG_INFO(system_log) << "hello system" << std::endl;
 }
 int main(int argc, char** argv) {
-//test_class();
-//  test_config();
-//test_yaml();
+  //test_class();
+  //  test_config();
+  //test_yaml();
   test_log();
-  sylar::Config::Visit([](sylar::ConfigVarBase::ptr var){
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "name=  "<<var->getName()
-                             << "description= " << var->getDescription()
-                             << "type.name= " << var->getTypeName()
-                             << "value= " << var->toString();
+  sylar::Config::Visit([](sylar::ConfigVarBase::ptr var) {
+    SYLAR_LOG_INFO(SYLAR_LOG_ROOT())
+        << "name=  " << var->getName()
+        << "description= " << var->getDescription()
+        << "type.name= " << var->getTypeName() << "value= " << var->toString();
   });
   return 0;
 }

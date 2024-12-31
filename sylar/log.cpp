@@ -449,7 +449,6 @@ void LogFormatter::init() {
       }
     }
 
-
     std::size_t n = i + 1;
     /// 这个是用来表明当前是否进入了编辑fmt阶段，就是%d对应的{}里面的部分
     int fmt_status = 0;
@@ -513,9 +512,9 @@ void LogFormatter::init() {
       vec.push_back(std::make_tuple("<<pattern_error>>", fmt, 0));
     }
   }
-    /// 上面是for循环的结束
+  /// 上面是for循环的结束
 
-    /// 下面这个是对文本类的收尾
+  /// 下面这个是对文本类的收尾
   if (!nstr.empty()) {
     vec.push_back(std::make_tuple(nstr, "", 0));
   }
