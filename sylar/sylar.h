@@ -9,5 +9,6 @@
 #include "singleton.h"
 #include "thread.h"
 #include "util.h"
+#include "bytearray.h"
 
 #endif /* __SYLAR_SYLAR_H__ */

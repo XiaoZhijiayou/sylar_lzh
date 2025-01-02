@@ -53,10 +53,14 @@
 -- 网络模块socket03
 -- 网络模块socket04
 -- 网络模块socket05
-
 -- 网络模块socket06：sock封装
 -- 网络模块socket07
 -- 网络模块socket08
+
+-- 序列化ByteArray01
+-- 序列化ByteArray02
+-- 序列化ByteArray03
+-- 序列化ByteArray04
 
 ```
 
@@ -294,6 +298,13 @@ Timer -> addTimer() --> cancel()
 connect,
 accept
 read/write/close
+
+## 序列化bytearray
+
+write(int, float ,int64, ...)
+read(int, float, int64, ...)
+##### 结构图
+![img.png](img.png)
 
 ## http协议开发
 
