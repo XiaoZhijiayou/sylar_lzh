@@ -62,6 +62,11 @@
 -- 序列化ByteArray03
 -- 序列化ByteArray04
 
+-- HTTP协议封装01
+-- HTTP协议封装02
+-- HTTP协议封装03
+-- HTTP协议封装04
+
 ```
 
 ## 开发环境
@@ -73,6 +78,8 @@ cmake 3.30.3
 yaml-cpp
 boost
 pthread
+http-parser :https://github.com/nodejs/http-parser
+ragel
 ```
 
 ## 项目路径
@@ -307,6 +314,33 @@ read(int, float, int64, ...)
 ![img.png](img.png)
 
 ## http协议开发
+HTTP/1.1 - API协议
+
+HttpRequest;
+HttpResponse;
+
+GET / HTTP/1.1
+Host: www.sylar.top
+
+```
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Cache-Control: no-cache
+Connection: keep-alive
+Content-Length: 29384
+Content-Type: text/html
+
+uri : http://www.baid.com/page/xxx?id=10&v=20#fr
+    http,协议
+    www.baid.com,host
+    80 端口
+    /page/xxx,path
+    id =10&v=20 param
+    fr fragment
+```
+- ![img_1.png](img_1.png) 
+- 这个是从https://github.com/mongrel2/mongrel2/tree/master/src/http11这个里面得到的
+- 并且用ragel生成
 
 
 

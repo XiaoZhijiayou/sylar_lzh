@@ -27,6 +27,9 @@ set(LIB_SRC
         sylar/address.cpp
         sylar/socket.cpp
         sylar/bytearray.cpp
+        sylar/http/http.cpp
+        sylar/http/http11_parser.rl.cpp
+        sylar/http/httpclient_parser.rl.cpp
 )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
@@ -98,6 +101,11 @@ add_executable(test_bytearray tests/test_bytearray.cpp)
 add_dependencies(test_bytearray sylar)
 force_redefine_file_macro_for_sources(test_bytearray) #___FILE___
 target_link_libraries(test_bytearray ${LIBS})
+
+add_executable(test_http tests/test_http.cpp)
+add_dependencies(test_http sylar)
+force_redefine_file_macro_for_sources(test_http) #___FILE___
+target_link_libraries(test_http ${LIBS})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
