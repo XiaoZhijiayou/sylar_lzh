@@ -8,7 +8,8 @@
 #include <iostream>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
-
+#include "http11_parser.h"
+#include "httpclient_parser.h"
 
 namespace sylar{
 
@@ -761,6 +762,22 @@ class HttpResponse {
 
   std::vector<std::string> m_cookies;
 };
+
+/**
+ * @brief 流式输出HttpRequest
+ * @param[in, out] os 输出流
+ * @param[in] req HTTP请求
+ * @return 输出流
+ */
+std::ostream& operator<<(std::ostream& os, const HttpRequest& req);
+
+/**
+ * @brief 流式输出HttpResponse
+ * @param[in, out] os 输出流
+ * @param[in] rsp HTTP响应
+ * @return 输出流
+ */
+std::ostream& operator<<(std::ostream& os, const HttpResponse& rsp);
 
 
 }

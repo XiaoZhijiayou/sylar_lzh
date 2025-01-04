@@ -30,6 +30,7 @@ set(LIB_SRC
         sylar/http/http.cpp
         sylar/http/http11_parser.rl.cpp
         sylar/http/httpclient_parser.rl.cpp
+        sylar/http/http_parser.cpp
 )
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
@@ -106,6 +107,11 @@ add_executable(test_http tests/test_http.cpp)
 add_dependencies(test_http sylar)
 force_redefine_file_macro_for_sources(test_http) #___FILE___
 target_link_libraries(test_http ${LIBS})
+
+add_executable(test_http_parser tests/test_http_parser.cpp)
+add_dependencies(test_http_parser sylar)
+force_redefine_file_macro_for_sources(test_http_parser) #___FILE___
+target_link_libraries(test_http_parser ${LIBS})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
