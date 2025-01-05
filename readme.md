@@ -66,6 +66,12 @@
 -- HTTP协议封装02
 -- HTTP协议封装03
 -- HTTP协议封装04
+-- HTTP协议封装05
+-- HTTP协议封装06
+
+-- TCPServer封装01 02
+
+-- Stream封装-SocketStream
 
 ```
 
@@ -341,6 +347,12 @@ uri : http://www.baid.com/page/xxx?id=10&v=20#fr
 - ![img_1.png](img_1.png) 
 - 这个是从https://github.com/mongrel2/mongrel2/tree/master/src/http11这个里面得到的
 - 并且用ragel生成
+
+## TcpServer封装
+基于TcpServer实现了一个EchoServer
+
+## Stream针对文件/socket封装
+read/write/readFixSize/writeFixSize
 
 
 
