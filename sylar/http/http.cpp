@@ -301,13 +301,13 @@ void HttpResponse::setRedirect(const std::string& uri){
 //  ss << key << "=" << val;
 //}
 
-//std::ostream& operator<<(std::ostream& os, const HttpRequest& req){
-//
-//}
+std::ostream& operator<<(std::ostream& os, const HttpRequest& req){
+    return req.dump(os);
+}
 
-//std::ostream& operator<<(std::ostream& os, const HttpResponse& rsp){
-//
-//}
+std::ostream& operator<<(std::ostream& os, const HttpResponse& rsp){
+  return rsp.dump(os);
+}
 
 }
 }

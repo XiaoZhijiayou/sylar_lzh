@@ -61,7 +61,7 @@ class HttpRequestParser{
      * */
     const http_parser& getParser() const {return m_parser;}
 
- protected:
+ public:
 
   /**
    * @brief 返回HttpRequest协议解析的缓存大小
@@ -141,7 +141,7 @@ class HttpResponseParser{
      * */
    const httpclient_parser& getParser() const {return m_parser;}
 
-  protected:
+  public:
 
    /**
    * @brief 返回HttpResponse协议解析的缓存大小

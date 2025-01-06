@@ -354,7 +354,10 @@ uri : http://www.baid.com/page/xxx?id=10&v=20#fr
 ## Stream针对文件/socket封装
 read/write/readFixSize/writeFixSize
 
+HttpSession/HttpConnection
+Server.accept, socket -> session
+client connect socket -> Connection
 
-
+HttpServer : TcpServer 
 
     
