@@ -73,6 +73,9 @@
 
 -- Stream封装-SocketStream
 
+
+-- HttpSerlet封装01
+-- HttpSerlet封装02
 ```
 
 ## 开发环境
@@ -360,4 +363,12 @@ client connect socket -> Connection
 
 HttpServer : TcpServer 
 
+    对于Servlet：交互式的浏览和修改数据，生成动态web内容，狭义Servlet是值java实现的接口，前端页面提出来请求，
+        后台如何知道用户想来做什么？并且给这个请求分配对应的处理类
+    Servlet <---------- FunctionServlet
+        |
+        |
+        v
+    ServletDispatch
+    
     

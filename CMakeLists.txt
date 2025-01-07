@@ -33,6 +33,7 @@ set(LIB_SRC
         sylar/http/http_parser.cpp
         sylar/streams/socket_stream.cpp
         sylar/http/http_session.cpp
+        sylar/http/servlet.cpp
         sylar/tcp_server.cpp
         sylar/stream.cpp
 )

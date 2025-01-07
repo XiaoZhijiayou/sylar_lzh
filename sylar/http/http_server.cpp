@@ -14,6 +14,8 @@ HttpServer::HttpServer(bool keepalive
            ,sylar::IOManager* accept_worker)
       :TcpServer(worker,accept_worker)
       ,m_isKeepalive(keepalive){
+      m_dispatch.reset(new ServletDispatch);
+
 }
 
 void HttpServer::handleClient(Socket::ptr client){
@@ -29,12 +31,14 @@ void HttpServer::handleClient(Socket::ptr client){
     }
     HttpResponse::ptr rsp(new HttpResponse(req->getVersion()
                                            ,req->isClose() || !m_isKeepalive));
-    rsp->setBody("hello sylar");
+    rsp->setHeader("Server",getName());
+    m_dispatch->handle(req,rsp,session);
 
-    SYLAR_LOG_INFO(g_logger) << " request : " << std::endl
-                << *req;
-    SYLAR_LOG_INFO(g_logger) << " response : " << std::endl
-                << *rsp;
+
+//    SYLAR_LOG_INFO(g_logger) << " request : " << std::endl
+//                << *req;
+//    SYLAR_LOG_INFO(g_logger) << " response : " << std::endl
+//                << *rsp;
 
     session->sendResponse(rsp);
   } while (m_isKeepalive);

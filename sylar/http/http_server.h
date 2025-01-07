@@ -3,6 +3,7 @@
 
 #include "sylar/tcp_server.h"
 #include "sylar/http/http_session.h"
+#include "servlet.h"
 
 namespace sylar{
 namespace http{
@@ -24,7 +25,16 @@ class HttpServer : public TcpServer{
              ,sylar::IOManager* worker = sylar::IOManager::GetThis()
              ,sylar::IOManager* accept_worker = sylar::IOManager::GetThis());
 
+  /**
+   * @brief 获取ServletDispatch
+   */
+  ServletDispatch::ptr getServletDispatch() const { return  m_dispatch;}
 
+  /**
+   * @brief 设置ServletDispatch
+   * @param v
+   */
+  void setServletDispatch(ServletDispatch::ptr v) { m_dispatch = v; }
 
  protected:
   virtual void handleClient(Socket::ptr client) override;
@@ -33,7 +43,8 @@ class HttpServer : public TcpServer{
 
   /// 是否支持长连接
   bool m_isKeepalive;
-
+  /// Servlet分发器
+  ServletDispatch::ptr m_dispatch;
 };
 
 }
