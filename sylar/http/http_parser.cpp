@@ -88,6 +88,7 @@ void on_request_uri(void *data, const char *at, size_t length){
 }
 
 void on_request_fragement(void *data, const char *at, size_t length){
+  SYLAR_LOG_INFO(g_logger) << "on_request_fragment:" << std::string(at,length);
   HttpRequestParser* parser = static_cast<HttpRequestParser*>(data);
   parser->getData()->setFragment(std::string(at,length));
 }
