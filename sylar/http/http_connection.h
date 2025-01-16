@@ -8,6 +8,14 @@ namespace sylar{
 
 namespace http{
 
+/**
+ * @brief HTTP响应结果
+ */
+
+//struct HttpResult{
+//  /// 智能指针类型定义
+//  typedef std::shared_ptr<>
+//};
 
 /**
  * @brief HttpConnection封装

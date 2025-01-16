@@ -7,6 +7,8 @@ project(sylar)
 include(cmake/utils.cmake)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -rdynamic -O3 -fPIC -ggdb -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations")
+set(CMAKE_C_FLAGS "$ENV{CXXFLAGS} -rdynamic -O3 -fPIC -ggdb -std=c11 -Wall -Wno-deprecated -Werror -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated-declarations")
+
 
 include_directories(.)
 include_directories(/usr/include)
@@ -36,11 +38,12 @@ set(LIB_SRC
         sylar/http/servlet.cpp
         sylar/tcp_server.cpp
         sylar/stream.cpp
+        sylar/http/http_connection.cpp
 )
 
 ragelmaker(sylar/http/http11_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/sylar/http)
 ragelmaker(sylar/http/httpclient_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/sylar/http)
-
+ragelmaker(sylar/uri.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/sylar)
 
 message(STATUS "LIB_SRC: ${LIB_SRC}")
 add_library(sylar SHARED ${LIB_SRC})
@@ -72,6 +75,8 @@ sylar_add_executable(test_http_parser "tests/test_http_parser.cpp" sylar "${LIBS
 sylar_add_executable(test_tcp_server "tests/test_tcp_server.cpp" sylar "${LIBS}")
 sylar_add_executable(echo_server "examples/echo_server.cpp" sylar "${LIBS}")
 sylar_add_executable(test_http_server "tests/test_http_server.cpp" sylar "${LIBS}")
+sylar_add_executable(test_http_connection "tests/test_http_connection.cpp" sylar "${LIBS}")
+sylar_add_executable(test_uri "tests/test_uri.cpp" sylar "${LIBS}")
 
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
