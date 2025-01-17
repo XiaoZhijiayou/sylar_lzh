@@ -6,6 +6,16 @@
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
+
+void test_pool(){
+  sylar::http::HttpConnectionPool::ptr  pool(new sylar::http::HttpConnectionPool(
+      "www.sylar.top", "",80,10,1000 * 30, 5));
+  sylar::IOManager::GetThis()->addTimer(1000,[pool](){
+    auto r = pool->doGet("/", 300);
+    SYLAR_LOG_INFO(g_logger) << r->toString();
+  },true);
+}
+
 void run(){
   /// 127.0.0.1:80
   sylar::Address::ptr addr = sylar::Address::LookupAnyIPAddress("www.sylar.top:80");
@@ -25,7 +35,7 @@ void run(){
   req->setHeader("host", "www.sylar.top");
   SYLAR_LOG_INFO(g_logger) << "req:" << std::endl
           << *req;
-  conn->sendRequset(req);
+  conn->sendRequest(req);
   auto rsp = conn->recvResponse();
 
   if(!rsp){
@@ -37,7 +47,18 @@ void run(){
 
   std::ofstream ofs("rsp.dat");
   ofs << *rsp;
+
+  SYLAR_LOG_INFO(g_logger) << "=========================================================";
+  auto r = sylar::http::HttpConnection::DoGet("http://www.baidu.com/", 300);
+  SYLAR_LOG_INFO(g_logger) << "result=" << r->result
+                           << " error=" << r->error
+                           << " rsp=" << (r->response ? r->response->toString() : "");
+
+  SYLAR_LOG_INFO(g_logger) << "=========================";
+  test_pool();
 }
+
+
 
 int main(int argc, char** argv){
   sylar::IOManager iom(2);
