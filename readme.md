@@ -319,10 +319,13 @@ read/write/close
 
 write(int, float ,int64, ...)
 read(int, float, int64, ...)
+
 ##### 结构图
+
 ![img.png](img.png)
 
 ## http协议开发
+
 HTTP/1.1 - API协议
 
 HttpRequest;
@@ -347,21 +350,24 @@ uri : http://www.baid.com/page/xxx?id=10&v=20#fr
     id =10&v=20 param
     fr fragment
 ```
-- ![img_1.png](img_1.png) 
+
+- ![img_1.png](img_1.png)
 - 这个是从https://github.com/mongrel2/mongrel2/tree/master/src/http11这个里面得到的
 - 并且用ragel生成
 
 ## TcpServer封装
+
 基于TcpServer实现了一个EchoServer
 
 ## Stream针对文件/socket封装
+
 read/write/readFixSize/writeFixSize
 
 HttpSession/HttpConnection
 Server.accept, socket -> session
 client connect socket -> Connection
 
-HttpServer : TcpServer 
+HttpServer : TcpServer
 
     对于Servlet：交互式的浏览和修改数据，生成动态web内容，狭义Servlet是值java实现的接口，前端页面提出来请求，
         后台如何知道用户想来做什么？并且给这个请求分配对应的处理类

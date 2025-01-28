@@ -295,7 +295,7 @@ IPv4Address::IPv4Address(uint32_t address, uint16_t port) {
   m_addr.sin_addr.s_addr = byteswapOnLittleEndian(address);
 }
 
-sockaddr* IPv4Address::getAddr(){
+sockaddr* IPv4Address::getAddr() {
   return (sockaddr*)&m_addr;
 }
 
@@ -381,7 +381,7 @@ IPv6Address::IPv6Address(const uint8_t address[16], uint16_t port) {
   memcpy(&m_addr.sin6_addr.s6_addr, address, 16);
 }
 
-sockaddr* IPv6Address::getAddr(){
+sockaddr* IPv6Address::getAddr() {
   return (sockaddr*)&m_addr;
 }
 
@@ -485,11 +485,11 @@ UnixAddress::UnixAddress(const std::string& path) {
   m_length += offsetof(sockaddr_un, sun_path);
 }
 
-void UnixAddress::setAddrlen(uint32_t v){
+void UnixAddress::setAddrlen(uint32_t v) {
   m_length = v;
 }
 
-sockaddr* UnixAddress::getAddr(){
+sockaddr* UnixAddress::getAddr() {
   return (sockaddr*)&m_addr;
 }
 
@@ -520,10 +520,9 @@ UnknowAddress::UnknowAddress(const sockaddr& addr) {
   m_addr = addr;
 }
 
-sockaddr* UnknowAddress::getAddr(){
+sockaddr* UnknowAddress::getAddr() {
   return (sockaddr*)&m_addr;
 }
-
 
 const sockaddr* UnknowAddress::getAddr() const {
   return &m_addr;
@@ -538,7 +537,7 @@ std::ostream& UnknowAddress::insert(std::ostream& os) const {
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Address& addr){
+std::ostream& operator<<(std::ostream& os, const Address& addr) {
   return addr.insert(os);
 }
 

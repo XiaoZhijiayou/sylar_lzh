@@ -101,7 +101,7 @@ class Address {
   /**
    * @brief 返回sockaddr指针，读写
    * */
-   virtual sockaddr* getAddr() = 0;
+  virtual sockaddr* getAddr() = 0;
 
   /**
    * @brief 返回sockaddr的长度

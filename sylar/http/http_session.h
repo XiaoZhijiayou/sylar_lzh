@@ -1,18 +1,17 @@
 #ifndef __SYLAR_HTTP_SESSION_H__
 #define __SYLAR_HTTP_SESSION_H__
 
-#include "sylar/streams/socket_stream.h"
 #include "http.h"
+#include "sylar/streams/socket_stream.h"
 
-namespace sylar{
+namespace sylar {
 
-namespace http{
-
+namespace http {
 
 /**
  * @brief HttpSession封装
  */
-class HttpSession : public SocketStream{
+class HttpSession : public SocketStream {
  public:
   /// 智能指针类型定义
   typedef std::shared_ptr<HttpSession> ptr;
@@ -32,9 +31,8 @@ class HttpSession : public SocketStream{
   int sendResponse(HttpResponse::ptr rsp);
 };
 
-}
+}  // namespace http
 
-}
-
+}  // namespace sylar
 
 #endif

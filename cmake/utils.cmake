@@ -1,6 +1,6 @@
 function(force_redefine_file_macro_for_sources targetname)
     get_target_property(source_files "${targetname}" SOURCES)
-    foreach(sourcefile ${source_files})
+    foreach (sourcefile ${source_files})
         # Get source file's current list of compile definitions.
         get_property(defs SOURCE "${sourcefile}"
                 PROPERTY COMPILE_DEFINITIONS)
@@ -13,7 +13,7 @@ function(force_redefine_file_macro_for_sources targetname)
                 SOURCE "${sourcefile}"
                 PROPERTY COMPILE_DEFINITIONS ${defs}
         )
-    endforeach()
+    endforeach ()
 endfunction()
 
 function(ragelmaker src_rl outputlist outputdir)

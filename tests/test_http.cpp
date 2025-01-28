@@ -1,16 +1,16 @@
 #include "sylar/http/http.h"
 #include "sylar/log.h"
 
-void test_request(){
+void test_request() {
   sylar::http::HttpRequest::ptr req(new sylar::http::HttpRequest);
-  req->setHeader("host","www.baidu.com");
+  req->setHeader("host", "www.baidu.com");
   req->setBody("hello sylar");
   req->dump(std::cout) << std::endl;
 }
 
-void test_response(){
+void test_response() {
   sylar::http::HttpResponse::ptr rsp(new sylar::http::HttpResponse);
-  rsp->setHeader("X-X","sylar");
+  rsp->setHeader("X-X", "sylar");
   rsp->setBody("hello sylar");
   rsp->setStatus((sylar::http::HttpStatus)400);
   rsp->setClose(false);
@@ -18,8 +18,8 @@ void test_response(){
   rsp->dump(std::cout) << std::endl;
 }
 
-int main(int argv,char** argc){
-//  test_request();
+int main(int argv, char** argc) {
+  //  test_request();
   test_response();
   return 0;
 }

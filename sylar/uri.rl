@@ -78,7 +78,7 @@ namespace sylar {
 
     action save_path
     {
-//      std::cout << std::string(mark, fpc - mark) << std::endl;
+      //      std::cout << std::string(mark, fpc - mark) << std::endl;
       if (mark != nullptr) {
         std::cout << std::string(mark, fpc - mark) << std::endl;
         uri->setPath(std::string(mark, fpc - mark));

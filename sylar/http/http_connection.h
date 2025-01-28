@@ -1,28 +1,28 @@
 #ifndef __SYLAR_HTTP_CONNECTION_H__
 #define __SYLAR_HTTP_CONNECTION_H__
 
-#include "sylar/streams/socket_stream.h"
-#include "http.h"
-#include "sylar/uri.h"
-#include "sylar/thread.h"
 #include <list>
+#include "http.h"
+#include "sylar/streams/socket_stream.h"
+#include "sylar/thread.h"
+#include "sylar/uri.h"
 
-namespace sylar{
+namespace sylar {
 
-namespace http{
+namespace http {
 
 /**
  * @brief HTTP响应结果
  */
 
-struct HttpResult{
+struct HttpResult {
   /// 智能指针类型定义
   typedef std::shared_ptr<HttpResult> ptr;
 
   /**
    * @brief 错误码定义
    */
-  enum class Error{
+  enum class Error {
     /// 正常
     OK = 0,
     /// 非法URL
@@ -51,12 +51,9 @@ struct HttpResult{
    * @param _response HTTP响应结构体
    * @param _error  错误概述
    */
-  HttpResult(int _result
-             ,HttpResponse::ptr _response
-             ,const std::string& _error)
-      :result(_result)
-      ,response(_response)
-      ,error(_error){ }
+  HttpResult(int _result, HttpResponse::ptr _response,
+             const std::string& _error)
+      : result(_result), response(_response), error(_error) {}
 
   /// 错误码
   int result;
@@ -73,8 +70,9 @@ class HttpConnectionPool;
 /**
  * @brief HttpConnection封装
  */
-class HttpConnection : public SocketStream{
+class HttpConnection : public SocketStream {
   friend class HttpConnectionPool;
+
  public:
   /// 智能指针类型定义
   typedef std::shared_ptr<HttpConnection> ptr;
@@ -87,10 +85,10 @@ class HttpConnection : public SocketStream{
    * @param body body请求消息体
    * @return 返回HTTP结果结构体
    */
-  static HttpResult::ptr DoGet(const std::string& url
-                               ,uint64_t timeout_ms
-                               ,const std::map<std::string,std::string>& headers = {}
-                               ,const std::string& body = "");
+  static HttpResult::ptr DoGet(
+      const std::string& url, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP的GET请求
@@ -100,10 +98,10 @@ class HttpConnection : public SocketStream{
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  static HttpResult::ptr DoGet(Uri::ptr uri
-                               , uint64_t timeout_ms
-                               , const std::map<std::string, std::string>& headers = {}
-                               , const std::string& body = "");
+  static HttpResult::ptr DoGet(
+      Uri::ptr uri, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP的POST请求
@@ -113,10 +111,10 @@ class HttpConnection : public SocketStream{
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  static HttpResult::ptr DoPost(const std::string& url
-                                , uint64_t timeout_ms
-                                , const std::map<std::string, std::string>& headers = {}
-                                , const std::string& body = "");
+  static HttpResult::ptr DoPost(
+      const std::string& url, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP的POST请求
@@ -126,10 +124,10 @@ class HttpConnection : public SocketStream{
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  static HttpResult::ptr DoPost(Uri::ptr uri
-                                , uint64_t timeout_ms
-                                , const std::map<std::string, std::string>& headers = {}
-                                , const std::string& body = "");
+  static HttpResult::ptr DoPost(
+      Uri::ptr uri, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP请求
@@ -140,11 +138,10 @@ class HttpConnection : public SocketStream{
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  static HttpResult::ptr DoRequest(HttpMethod method
-                                   , const std::string& url
-                                   , uint64_t timeout_ms
-                                   , const std::map<std::string, std::string>& headers = {}
-                                   , const std::string& body = "");
+  static HttpResult::ptr DoRequest(
+      HttpMethod method, const std::string& url, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP请求
@@ -155,11 +152,10 @@ class HttpConnection : public SocketStream{
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  static HttpResult::ptr DoRequest(HttpMethod method
-                                   , Uri::ptr uri
-                                   , uint64_t timeout_ms
-                                   , const std::map<std::string, std::string>& headers = {}
-                                   , const std::string& body = "");
+  static HttpResult::ptr DoRequest(
+      HttpMethod method, Uri::ptr uri, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP请求
@@ -168,10 +164,8 @@ class HttpConnection : public SocketStream{
      * @param[in] timeout_ms 超时时间(毫秒)
      * @return 返回HTTP结果结构体
      */
-  static HttpResult::ptr DoRequest(HttpRequest::ptr req
-                                   , Uri::ptr uri
-                                   , uint64_t timeout_ms);
-
+  static HttpResult::ptr DoRequest(HttpRequest::ptr req, Uri::ptr uri,
+                                   uint64_t timeout_ms);
 
   /***
    * @brief 构造函数
@@ -208,21 +202,18 @@ class HttpConnectionPool {
   // 互斥锁
   typedef Mutex MutexType;
 
-  static HttpConnectionPool::ptr Create(const std::string& uri
-                                        ,const std::string& vhost
-                                        ,uint32_t max_size
-                                        ,uint32_t max_alive_time
-                                        ,uint32_t max_request);
+  static HttpConnectionPool::ptr Create(const std::string& uri,
+                                        const std::string& vhost,
+                                        uint32_t max_size,
+                                        uint32_t max_alive_time,
+                                        uint32_t max_request);
 
   /**
    * @brief 构造函数
    */
-  HttpConnectionPool(const std::string& host
-                     ,const std::string& vhost
-                     ,uint32_t port
-                     ,uint32_t max_size
-                     ,uint32_t max_alive_time
-                     ,uint32_t max_request);
+  HttpConnectionPool(const std::string& host, const std::string& vhost,
+                     uint32_t port, uint32_t max_size, uint32_t max_alive_time,
+                     uint32_t max_request);
   /**
    * @brief 取连接
    * @return
@@ -237,10 +228,9 @@ class HttpConnectionPool {
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  HttpResult::ptr doGet(const std::string& url
-                        , uint64_t timeout_ms
-                        , const std::map<std::string, std::string>& headers = {}
-                        , const std::string& body = "");
+  HttpResult::ptr doGet(const std::string& url, uint64_t timeout_ms,
+                        const std::map<std::string, std::string>& headers = {},
+                        const std::string& body = "");
 
   /**
      * @brief 发送HTTP的GET请求
@@ -250,10 +240,9 @@ class HttpConnectionPool {
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  HttpResult::ptr doGet(Uri::ptr uri
-                        , uint64_t timeout_ms
-                        , const std::map<std::string, std::string>& headers = {}
-                        , const std::string& body = "");
+  HttpResult::ptr doGet(Uri::ptr uri, uint64_t timeout_ms,
+                        const std::map<std::string, std::string>& headers = {},
+                        const std::string& body = "");
 
   /**
      * @brief 发送HTTP的POST请求
@@ -263,10 +252,9 @@ class HttpConnectionPool {
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  HttpResult::ptr doPost(const std::string& url
-                         , uint64_t timeout_ms
-                         , const std::map<std::string, std::string>& headers = {}
-                         , const std::string& body = "");
+  HttpResult::ptr doPost(const std::string& url, uint64_t timeout_ms,
+                         const std::map<std::string, std::string>& headers = {},
+                         const std::string& body = "");
 
   /**
      * @brief 发送HTTP的POST请求
@@ -276,10 +264,9 @@ class HttpConnectionPool {
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  HttpResult::ptr doPost(Uri::ptr uri
-                         , uint64_t timeout_ms
-                         , const std::map<std::string, std::string>& headers = {}
-                         , const std::string& body = "");
+  HttpResult::ptr doPost(Uri::ptr uri, uint64_t timeout_ms,
+                         const std::map<std::string, std::string>& headers = {},
+                         const std::string& body = "");
 
   /**
      * @brief 发送HTTP请求
@@ -290,11 +277,10 @@ class HttpConnectionPool {
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  HttpResult::ptr doRequest(HttpMethod method
-                            , const std::string& url
-                            , uint64_t timeout_ms
-                            , const std::map<std::string, std::string>& headers = {}
-                            , const std::string& body = "");
+  HttpResult::ptr doRequest(
+      HttpMethod method, const std::string& url, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP请求
@@ -305,11 +291,10 @@ class HttpConnectionPool {
      * @param[in] body 请求消息体
      * @return 返回HTTP结果结构体
      */
-  HttpResult::ptr doRequest(HttpMethod method
-                            , Uri::ptr uri
-                            , uint64_t timeout_ms
-                            , const std::map<std::string, std::string>& headers = {}
-                            , const std::string& body = "");
+  HttpResult::ptr doRequest(
+      HttpMethod method, Uri::ptr uri, uint64_t timeout_ms,
+      const std::map<std::string, std::string>& headers = {},
+      const std::string& body = "");
 
   /**
      * @brief 发送HTTP请求
@@ -317,13 +302,12 @@ class HttpConnectionPool {
      * @param[in] timeout_ms 超时时间(毫秒)
      * @return 返回HTTP结果结构体
      */
-  HttpResult::ptr doRequest(HttpRequest::ptr req
-                            , uint64_t timeout_ms);
- private:
-  static void ReleasePtr(HttpConnection* ptr,HttpConnectionPool* pool);
+  HttpResult::ptr doRequest(HttpRequest::ptr req, uint64_t timeout_ms);
 
  private:
+  static void ReleasePtr(HttpConnection* ptr, HttpConnectionPool* pool);
 
+ private:
   std::string m_host;
   std::string m_vhost;
   uint32_t m_port;
@@ -340,9 +324,7 @@ class HttpConnectionPool {
   std::atomic<int32_t> m_total = {0};
 };
 
-
-}
-}
-
+}  // namespace http
+}  // namespace sylar
 
 #endif

@@ -5,22 +5,20 @@
 #ifndef __SYLAR_TCP_SERVER_H__
 #define __SYLAR_TCP_SERVER_H__
 
-#include <memory>
 #include <functional>
-#include "socket.h"
-#include "config.h"
+#include <memory>
 #include "address.h"
-#include "noncopyable.h"
+#include "config.h"
 #include "iomanager.h"
+#include "noncopyable.h"
+#include "socket.h"
 
-
-namespace sylar{
+namespace sylar {
 
 /**
  * @brief TCP服务器封装
  */
-class TcpServer : public std::enable_shared_from_this<TcpServer>
-    ,Noncopyable{
+class TcpServer : public std::enable_shared_from_this<TcpServer>, Noncopyable {
  public:
   typedef std::shared_ptr<TcpServer> ptr;
 
@@ -31,8 +29,8 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>
    * @param worker socket客户端工作的协程调度器
    * @param accept_worker 服务器socket执行接收socket连接的协程调度器
    */
-  TcpServer(sylar::IOManager* worker = sylar::IOManager::GetThis()
-            ,sylar::IOManager* accept_worker = sylar::IOManager::GetThis());
+  TcpServer(sylar::IOManager* worker = sylar::IOManager::GetThis(),
+            sylar::IOManager* accept_worker = sylar::IOManager::GetThis());
 
   /**
    * @brief 析构函数
@@ -52,8 +50,8 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>
    * @param fails 绑定失败的地址
    * @return 是否绑定成功
    */
-  virtual bool bind(const std::vector<Address::ptr>& addrs
-                    ,std::vector<Address::ptr>& fails);
+  virtual bool bind(const std::vector<Address::ptr>& addrs,
+                    std::vector<Address::ptr>& fails);
 
   /**
    * @brief 启动服务
@@ -66,15 +64,15 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>
    */
   virtual void stop();
 
-  uint64_t getRecvTimeout() const {return m_recvTimeout;}
+  uint64_t getRecvTimeout() const { return m_recvTimeout; }
 
-  std::string getName() const {return m_name;}
+  std::string getName() const { return m_name; }
 
-  void setRecvTimeout(uint64_t v) { m_recvTimeout = v;}
+  void setRecvTimeout(uint64_t v) { m_recvTimeout = v; }
 
-  virtual void setName(const std::string& v) { m_name = v;}
+  virtual void setName(const std::string& v) { m_name = v; }
 
-  bool isStop() const {return m_isStop;}
+  bool isStop() const { return m_isStop; }
 
   virtual std::string tostring(const std::string& prefix = "");
 
@@ -92,7 +90,6 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>
   virtual void startAccept(Socket::ptr sock);
 
  private:
-
   /// 监听socket数组
   std::vector<Socket::ptr> m_socks;
   /// 新连接的Socket工作的调度器
@@ -107,10 +104,8 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>
   std::string m_type = "tcp";
   /// 服务是否停止
   bool m_isStop;
-
-
 };
 
-}
+}  // namespace sylar
 
 #endif

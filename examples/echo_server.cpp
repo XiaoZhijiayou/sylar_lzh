@@ -1,12 +1,12 @@
-#include "sylar/tcp_server.h"
-#include "sylar/log.h"
-#include "sylar/iomanager.h"
 #include "sylar/address.h"
 #include "sylar/bytearray.h"
+#include "sylar/iomanager.h"
+#include "sylar/log.h"
+#include "sylar/tcp_server.h"
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
-class EchoServer : public sylar::TcpServer{
+class EchoServer : public sylar::TcpServer {
  public:
   EchoServer(int type);
   void handleClient(sylar::Socket::ptr client);
@@ -15,33 +15,34 @@ class EchoServer : public sylar::TcpServer{
   int m_type = 0;
 };
 
-EchoServer::EchoServer(int type)
-  :m_type(type){
-}
+EchoServer::EchoServer(int type) : m_type(type) {}
 
-void EchoServer::handleClient(sylar::Socket::ptr client){
+void EchoServer::handleClient(sylar::Socket::ptr client) {
   SYLAR_LOG_INFO(g_logger) << "handleClient " << *client;
   sylar::ByteArray::ptr ba(new sylar::ByteArray);
-  while (true){
+  while (true) {
     ba->clear();
     std::vector<iovec> iovs;
-    ba->getWriteBuffers(iovs,1024);
-    int rt = client->recv(&iovs[0],iovs.size());
+    ba->getWriteBuffers(iovs, 1024);
+    int rt = client->recv(&iovs[0], iovs.size());
     SYLAR_LOG_INFO(g_logger) << "rt = " << rt;
-    if(rt == 0){
+    if (rt == 0) {
       SYLAR_LOG_INFO(g_logger) << "Client close: " << *client;
       break;
-    } else if(rt < 0){
-      SYLAR_LOG_INFO(g_logger) << "Client error rt =" << rt
-        << " errno = " << errno << " errstr = " << strerror(errno);
+    } else if (rt < 0) {
+      SYLAR_LOG_INFO(g_logger)
+          << "Client error rt =" << rt << " errno = " << errno
+          << " errstr = " << strerror(errno);
       break;
     }
     ba->setPosition(ba->getPosition() + rt);
     ba->setPosition(0);
-    SYLAR_LOG_INFO(g_logger) << "recv rt =" << rt << " data= " << std::string((char *)iovs[0].iov_base,rt);
-    if(m_type == 1){
+    SYLAR_LOG_INFO(g_logger)
+        << "recv rt =" << rt
+        << " data= " << std::string((char*)iovs[0].iov_base, rt);
+    if (m_type == 1) {
       std::cout << ba->toString();
-    } else{
+    } else {
       std::cout << ba->toHexString();
     }
     std::cout.flush();
@@ -50,23 +51,24 @@ void EchoServer::handleClient(sylar::Socket::ptr client){
 
 int type = 1;
 
-void run(){
+void run() {
   SYLAR_LOG_INFO(g_logger) << "server type=" << type;
   EchoServer::ptr es(new EchoServer(type));
   auto addr = sylar::Address::LookupAny("0.0.0.0:8020");
-  while (!es->bind(addr)){
+  while (!es->bind(addr)) {
     sleep(200000000);
   }
   es->start();
 }
 
-int main(int argc,char** argv){
-  if(argc < 2){
-    SYLAR_LOG_INFO(g_logger) << "used as[" << argv[0] << " -t] or [" << argv[0] << "-b]";
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    SYLAR_LOG_INFO(g_logger)
+        << "used as[" << argv[0] << " -t] or [" << argv[0] << "-b]";
     return 0;
   }
 
-  if(!strcmp(argv[1],"-b")){
+  if (!strcmp(argv[1], "-b")) {
     type = 2;
   }
 

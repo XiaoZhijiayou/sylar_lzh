@@ -1,10 +1,10 @@
 #ifndef __SYLAR_SOCKET_H__
 #define __SYLAR_SOCKET_H__
 
-#include "address.h"
 #include <memory>
-#include "noncopyable.h"
+#include "address.h"
 #include "hook.h"
+#include "noncopyable.h"
 
 namespace sylar {
 
@@ -19,7 +19,7 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
   /**
    * @brief socket 类型
    * */
-  enum Type{
+  enum Type {
     /// TCP 类型
     TCP = SOCK_STREAM,
     /// UDP 类型
@@ -29,7 +29,7 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
   /**
    * @brief socket协议族
    * */
-   enum Family{
+  enum Family {
     /// IPv4 socket
     IPv4 = AF_INET,
     /// IPv6 socket
@@ -270,10 +270,10 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
        * */
   Address::ptr getLocalAddress();
 
-  int getFamily() const {return m_family;}
-  int getType() const {return m_type;}
-  int getProtocol() const {return m_protocol;}
-  bool isConnected() const {return m_isConnect;}
+  int getFamily() const { return m_family; }
+  int getType() const { return m_type; }
+  int getProtocol() const { return m_protocol; }
+  bool isConnected() const { return m_isConnect; }
 
   /**
    * @brief 返回是否有效
@@ -291,7 +291,7 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
   virtual std::ostream& dump(std::ostream& os) const;
   virtual std::string toString() const;
 
-  int getSocket() const {return m_sock;}
+  int getSocket() const { return m_sock; }
 
   /**
        * @brief 撤销读
@@ -314,7 +314,6 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
   bool cancelAll();
 
  protected:
-
   /**
    * @brief 初始化socket
    * */
@@ -347,8 +346,7 @@ class Socket : public std::enable_shared_from_this<Socket>, Noncopyable {
   Address::ptr m_remoteAddress;
 };
 
-std::ostream &operator<<(std::ostream &os,const Socket &sock);
-
+std::ostream& operator<<(std::ostream& os, const Socket& sock);
 
 }  // namespace sylar
 

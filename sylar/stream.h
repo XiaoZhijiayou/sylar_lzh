@@ -4,20 +4,19 @@
 #include <memory>
 #include "bytearray.h"
 
-
-namespace sylar{
+namespace sylar {
 
 /**
  * @brief 流结构
  */
-class Stream{
+class Stream {
  public:
   typedef std::shared_ptr<Stream> ptr;
 
   /**
    * @brief 析构函数
    */
-  virtual ~Stream() { }
+  virtual ~Stream() {}
 
   /**
    * @brief 读数据
@@ -28,7 +27,7 @@ class Stream{
    *    @retval = 0 被关闭
    *    @retval < 0 出现流错误
    */
-  virtual int read (void* buffer, size_t length) = 0;
+  virtual int read(void* buffer, size_t length) = 0;
 
   /**
    * @brief 读数据
@@ -111,10 +110,8 @@ class Stream{
    * @brief 关闭流
    */
   virtual void close() = 0;
-
 };
 
-
-}
+}  // namespace sylar
 
 #endif
