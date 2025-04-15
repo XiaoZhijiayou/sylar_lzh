@@ -10,8 +10,9 @@ static sylar::ConfigVar<uint64_t>::ptr g_tcp_server_read_timeout =
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NEAME("system");
 
-TcpServer::TcpServer(sylar::IOManager* worker, sylar::IOManager* accept_worker)
+TcpServer::TcpServer(sylar::IOManager* worker, sylar::IOManager* io_worker,sylar::IOManager* accept_worker)
     : m_worker(worker),
+      m_ioWorker(io_worker),
       m_acceptWorker(accept_worker),
       m_recvTimeout(g_tcp_server_read_timeout->getValue()),
       m_name("sylar/1.0.0"),
@@ -102,8 +103,11 @@ void TcpServer::startAccept(Socket::ptr sock) {
     Socket::ptr Client = sock->accept();
     if (Client) {
       Client->setRecvTimeout(m_recvTimeout);
-      m_worker->schedule(
-          std::bind(&TcpServer::handleClient, shared_from_this(), Client));
+      SYLAR_LOG_DEBUG(g_logger) << "TcpServer::startAccept handleClient";
+      m_ioWorker->schedule(std::bind(&TcpServer::handleClient,
+                shared_from_this(), Client));
+      // m_worker->schedule(
+      //     std::bind(&TcpServer::handleClient, shared_from_this(), Client));
     } else {
       SYLAR_LOG_ERROR(g_logger)
           << " accept errno" << errno << " errstr = " << strerror(errno);

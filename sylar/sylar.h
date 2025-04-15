@@ -10,5 +10,13 @@
 #include "singleton.h"
 #include "thread.h"
 #include "util.h"
+#include "address.h"
+#include "socket.h"
+#include "tcp_server.h"
+#include "config.h"
+#include "streams/socket_stream.h"
+#include "zk_client.h"
+// #include "rpc/rpc_provider.h"
+#include "rpc/rpc_server.h"
 
 #endif /* __SYLAR_SYLAR_H__ */

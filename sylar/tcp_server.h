@@ -30,6 +30,7 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>, Noncopyable {
    * @param accept_worker 服务器socket执行接收socket连接的协程调度器
    */
   TcpServer(sylar::IOManager* worker = sylar::IOManager::GetThis(),
+            sylar::IOManager* io_worker = sylar::IOManager::GetThis(),  
             sylar::IOManager* accept_worker = sylar::IOManager::GetThis());
 
   /**
@@ -89,11 +90,12 @@ class TcpServer : public std::enable_shared_from_this<TcpServer>, Noncopyable {
    */
   virtual void startAccept(Socket::ptr sock);
 
- private:
+ protected: // 之前是private，现在为了迎合rpc部分的功能，改为protected
   /// 监听socket数组
   std::vector<Socket::ptr> m_socks;
   /// 新连接的Socket工作的调度器
   IOManager* m_worker;
+  IOManager* m_ioWorker;
   /// 服务器Socket接受连接的调度器
   IOManager* m_acceptWorker;
   /// 接收超时时间(毫秒)

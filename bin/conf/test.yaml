@@ -1,0 +1,7 @@
+name: XYZ
+sex: male
+age: 30
+system:
+  port: 0
+  value: 0
+  int_vec: [10, 20]

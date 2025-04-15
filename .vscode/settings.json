@@ -1,5 +1,8 @@
 {
     "files.associations": {
+        "*.sqlbook": "sql",
+        "*.ndjson": "jsonl",
+        "*.dbclient-js": "javascript",
         "*.tcc": "cpp",
         "cstdarg": "cpp",
         "iosfwd": "cpp",
@@ -87,6 +90,7 @@
         "variant": "cpp",
         "csetjmp": "cpp",
         "ranges": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "export": "c"
     }
 }

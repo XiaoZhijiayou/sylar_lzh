@@ -424,76 +424,163 @@ int close(int fd) {
 /**
  * 对用户反馈是否是用户设置了非阻塞模式。
  */
-int fcntl(int fildes, int cmd, ...) {
+// int fcntl(int fildes, int cmd, ...) {
+//   va_list va;
+//   va_start(va, cmd);
+//   switch (cmd) {
+//     case F_SETFL: {
+//       int arg = va_arg(va, int);
+//       va_end(va);
+//       sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fildes);
+//       if (!ctx || ctx->isClose() || ctx->isSocket()) {
+//         return fcntl_f(fildes, cmd, arg);
+//       }
+//       ctx->setUserNonblock(arg & O_NONBLOCK);
+//       if (ctx->getSysNonblock()) {
+//         arg |= O_NONBLOCK;
+//       } else {
+//         arg &= ~O_NONBLOCK;
+//       }
+//       return fcntl_f(fildes, cmd, arg);
+//     } break;
+//     case F_GETFL: {
+//       va_end(va);
+//       int arg = fcntl(fildes, cmd);
+//       sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fildes);
+//       if (!ctx || ctx->isClose() || !ctx->isSocket()) {
+//         return arg;
+//       }
+//       if (ctx->getUserNonblock()) {
+//         return arg | O_NONBLOCK;
+//       } else {
+//         return arg & ~O_NONBLOCK;
+//       }
+//     } break;
+//     case F_DUPFD:
+//     case F_DUPFD_CLOEXEC:
+//     case F_SETFD:
+//     case F_SETOWN:
+//     case F_SETSIG:
+//     case F_SETLEASE:
+//     case F_NOTIFY:
+//     case F_SETPIPE_SZ: {
+//       int arg = va_arg(va, int);
+//       va_end(va);
+//       return fcntl_f(fildes, cmd, arg);
+//     } break;
+//     case F_GETFD:
+//     case F_GETOWN:
+//     case F_GETSIG:
+//     case F_GETLEASE:
+//     case F_GETPIPE_SZ: {
+//       va_end(va);
+//       return fcntl_f(fildes, cmd);
+//     } break;
+//     case F_SETLK:
+//     case F_SETLKW:
+//     case F_GETLK: {
+//       struct flock* arg = va_arg(va, struct flock*);
+//       va_end(va);
+//       return fcntl_f(fildes, cmd, arg);
+//     } break;
+//     case F_GETOWN_EX:
+//     case F_SETOWN_EX: {
+//       struct f_owner_exlock* arg = va_arg(va, struct f_owner_exlock*);
+//       va_end(va);
+//       return fcntl_f(fildes, cmd, arg);
+//     } break;
+//     default:
+//       va_end(va);
+//       return fcntl(fildes, cmd);
+//   }
+// }
+int fcntl(int fd, int cmd, ... /* arg */ ) {
   va_list va;
   va_start(va, cmd);
-  switch (cmd) {
-    case F_SETFL: {
-      int arg = va_arg(va, int);
-      va_end(va);
-      sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fildes);
-      if (!ctx || ctx->isClose() || ctx->isSocket()) {
-        return fcntl_f(fildes, cmd, arg);
-      }
-      ctx->setUserNonblock(arg & O_NONBLOCK);
-      if (ctx->getSysNonblock()) {
-        arg |= O_NONBLOCK;
-      } else {
-        arg &= ~O_NONBLOCK;
-      }
-      return fcntl_f(fildes, cmd, arg);
-    } break;
-    case F_GETFL: {
-      va_end(va);
-      int arg = fcntl(fildes, cmd);
-      sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fildes);
-      if (!ctx || ctx->isClose() || !ctx->isSocket()) {
-        return arg;
-      }
-      if (ctx->getUserNonblock()) {
-        return arg | O_NONBLOCK;
-      } else {
-        return arg & ~O_NONBLOCK;
-      }
-    } break;
-    case F_DUPFD:
-    case F_DUPFD_CLOEXEC:
-    case F_SETFD:
-    case F_SETOWN:
-    case F_SETSIG:
-    case F_SETLEASE:
-    case F_NOTIFY:
-    case F_SETPIPE_SZ: {
-      int arg = va_arg(va, int);
-      va_end(va);
-      return fcntl_f(fildes, cmd, arg);
-    } break;
-    case F_GETFD:
-    case F_GETOWN:
-    case F_GETSIG:
-    case F_GETLEASE:
-    case F_GETPIPE_SZ: {
-      va_end(va);
-      return fcntl_f(fildes, cmd);
-    } break;
-    case F_SETLK:
-    case F_SETLKW:
-    case F_GETLK: {
-      struct flock* arg = va_arg(va, struct flock*);
-      va_end(va);
-      return fcntl_f(fildes, cmd, arg);
-    } break;
-    case F_GETOWN_EX:
-    case F_SETOWN_EX: {
-      struct f_owner_exlock* arg = va_arg(va, struct f_owner_exlock*);
-      va_end(va);
-      return fcntl_f(fildes, cmd, arg);
-    } break;
-    default:
-      va_end(va);
-      return fcntl(fildes, cmd);
+  switch(cmd) {
+      case F_SETFL:
+          {
+              int arg = va_arg(va, int);
+              va_end(va);
+              sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);
+              if(!ctx || ctx->isClose() || !ctx->isSocket()) {
+                  return fcntl_f(fd, cmd, arg);
+              }
+              ctx->setUserNonblock(arg & O_NONBLOCK);
+              if(ctx->getSysNonblock()) {
+                  arg |= O_NONBLOCK;
+              } else {
+                  arg &= ~O_NONBLOCK;
+              }
+              return fcntl_f(fd, cmd, arg);
+          }
+          break;
+      case F_GETFL:
+          {
+              va_end(va);
+              int arg = fcntl_f(fd, cmd);
+              sylar::FdCtx::ptr ctx = sylar::FdMgr::GetInstance()->get(fd);
+              if(!ctx || ctx->isClose() || !ctx->isSocket()) {
+                  return arg;
+              }
+              if(ctx->getUserNonblock()) {
+                  return arg | O_NONBLOCK;
+              } else {
+                  return arg & ~O_NONBLOCK;
+              }
+          }
+          break;
+      case F_DUPFD:
+      case F_DUPFD_CLOEXEC:
+      case F_SETFD:
+      case F_SETOWN:
+      case F_SETSIG:
+      case F_SETLEASE:
+      case F_NOTIFY:
+#ifdef F_SETPIPE_SZ
+      case F_SETPIPE_SZ:
+#endif
+          {
+              int arg = va_arg(va, int);
+              va_end(va);
+              return fcntl_f(fd, cmd, arg); 
+          }
+          break;
+      case F_GETFD:
+      case F_GETOWN:
+      case F_GETSIG:
+      case F_GETLEASE:
+#ifdef F_GETPIPE_SZ
+      case F_GETPIPE_SZ:
+#endif
+          {
+              va_end(va);
+              return fcntl_f(fd, cmd);
+          }
+          break;
+      case F_SETLK:
+      case F_SETLKW:
+      case F_GETLK:
+          {
+              struct flock* arg = va_arg(va, struct flock*);
+              va_end(va);
+              return fcntl_f(fd, cmd, arg);
+          }
+          break;
+      case F_GETOWN_EX:
+      case F_SETOWN_EX:
+          {
+              struct f_owner_exlock* arg = va_arg(va, struct f_owner_exlock*);
+              va_end(va);
+              return fcntl_f(fd, cmd, arg);
+          }
+          break;
+      default:
+          va_end(va);
+          return fcntl_f(fd, cmd);
   }
 }
+
 
 /**
  * 对设备进行控制操作

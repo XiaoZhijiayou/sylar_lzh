@@ -2,6 +2,7 @@
 #include <thread>
 #include "../sylar/log.h"
 #include "../sylar/util.h"
+#include <zookeeper.h>
 
 int main(int argc, char* argv[]) {
   sylar::Logger::ptr logger(new sylar::Logger);
@@ -23,3 +24,7 @@ int main(int argc, char* argv[]) {
   SYLAR_LOG_INFO(l) << "XXX";
   return 0;
 }
+
+
+
+
